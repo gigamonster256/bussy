@@ -16,6 +16,8 @@
           bun
           # For systems that do not ship with Python by default (required by `node-gyp`)
           python3
+          # observability tools
+          docker-compose
         ];
       };
     });
