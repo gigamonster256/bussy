@@ -1,6 +1,6 @@
 import { DateTime, Effect } from "effect"
-import type { Arrival, Direction, Pattern, Route } from "../domain.js"
-import { AggieSpiritAuth } from "./AggieSpiritAuth.js"
+import type { Arrival, Direction, Pattern, Route } from "../shared/domain.ts"
+import { AggieSpiritAuth } from "./AggieSpiritAuth.ts"
 
 import * as api from "aggie-spirit-api"
 

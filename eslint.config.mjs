@@ -90,9 +90,11 @@ export default [
       "@typescript-eslint/no-empty-interface": "off",
       "@typescript-eslint/consistent-type-imports": "warn",
 
+
       "@typescript-eslint/no-unused-vars": ["error", {
         argsIgnorePattern: "^_",
-        varsIgnorePattern: "^_"
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_"
       }],
 
       "@typescript-eslint/ban-ts-comment": "off",

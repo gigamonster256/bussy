@@ -1,16 +1,12 @@
 import { Effect, Layer } from "effect"
 import { describe, expect, it } from "vitest"
-import { AggieSpiritAuthMock } from "../src/mocks/AggieSpiritAuth.js"
-import { AggieSpiritAuth } from "../src/services/AggieSpiritAuth.js"
-import { TestConfigProvider } from "./config.js"
+import { AggieSpiritAuthMock } from "../mocks/AggieSpiritAuth.ts"
+import { AggieSpiritAuth } from "../../src/services/AggieSpiritAuth.ts"
 
 // Note: The Raw layer test requires TEST_PRODUCTION_API=1 to run since it calls the production API
 const run_production_tests = Boolean(process.env.TEST_PRODUCTION_API)
 // effect native config?
 // const run_production_tests = Config.boolean("TEST_PRODUCTION_API")
-
-// theres got to be a better way to provide this
-const TestConfig = Effect.withConfigProvider(TestConfigProvider)
 
 describe("AggieSpiritAuth", () => {
   it("Mock returns random key on each call", async () => {
@@ -31,7 +27,7 @@ describe("AggieSpiritAuth", () => {
       expect(headers1.Cookie).not.toBe(headers2.Cookie)
     })
 
-    await Effect.runPromise(program.pipe(Effect.provide(AggieSpiritAuthMock), TestConfig))
+    await Effect.runPromise(program.pipe(Effect.provide(AggieSpiritAuthMock)))
   })
 
   it.skipIf(!run_production_tests)("Raw layer gets new key each call", async () => {
@@ -52,7 +48,7 @@ describe("AggieSpiritAuth", () => {
       expect(headers1.Cookie).not.toBe(headers2.Cookie)
     })
 
-    await Effect.runPromise(program.pipe(Effect.provide(AggieSpiritAuth.Raw), TestConfig))
+    await Effect.runPromise(program.pipe(Effect.provide(AggieSpiritAuth.Raw)))
   })
 
   const runCachingTest = async (layer: Layer.Layer<AggieSpiritAuth, unknown>) => {
@@ -69,7 +65,7 @@ describe("AggieSpiritAuth", () => {
       expect(headers2.Cookie).toBe(headers3.Cookie)
     })
 
-    await Effect.runPromise(program.pipe(Effect.provide(layer), TestConfig))
+    await Effect.runPromise(program.pipe(Effect.provide(layer)))
   }
 
   it("Default layer caches the key (with mock)", async () => {

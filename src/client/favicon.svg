@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background rounded square in maroon -->
+  <rect x="4" y="4" width="56" height="56" rx="12" ry="12" fill="#500000"/>
+  
+  <!-- Letter B stylized as a bus front -->
+  <text x="33" y="50" 
+        font-family="Arial Black, sans-serif" 
+        font-size="50" 
+        font-weight="bold" 
+        fill="#FFFFFF" 
+        text-anchor="middle">B</text>
+  
+  <!-- Two small circles as headlights -->
+  <!-- <circle cx="20" cy="52" r="3" fill="#FFCC00"/>
+  <circle cx="44" cy="52" r="3" fill="#FFCC00"/> -->
+</svg>

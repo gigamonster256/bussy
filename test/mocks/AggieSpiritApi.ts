@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
-import type { Arrival, Route, Stop } from "../domain.js"
-import { AggieSpiritApi } from "../services/AggieSpiritApi.js"
+import { AggieSpiritApi } from "../../src/services/AggieSpiritApi.ts"
+import type { Arrival, Route, Stop } from "../../src/shared/domain.ts"
 
 /**
  * Creates a mock AggieSpiritApi Layer for testing

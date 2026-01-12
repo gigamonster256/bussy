@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+bun.lockb
+
+# Build outputs
+build/
+dist/
+
+# Development files
+.git/
+.gitignore
+.env
+.env.local
+.env*.local
+*.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+test/
+coverage/
+*.test.ts
+
+# Data and logs
+data/
+*.db
+*.log
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Other
+.DS_Store
+Thumbs.db

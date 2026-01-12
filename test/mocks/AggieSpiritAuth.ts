@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect"
-import { AggieSpiritAuth } from "../services/AggieSpiritAuth.js"
+import { AggieSpiritAuth } from "../../src/services/AggieSpiritAuth.ts"
 
 const generateRandomToken = () => {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

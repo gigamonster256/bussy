@@ -18,3 +18,9 @@ result-*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Database
+data/
+*.db
+*.db-wal
+*.db-shm
