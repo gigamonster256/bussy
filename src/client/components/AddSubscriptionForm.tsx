@@ -80,10 +80,7 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
         stopId: stop.code,
         notifyMinutes: notifyMinutes(),
         timeRangeStart: timeRangeStart(),
-        timeRangeEnd: timeRangeEnd(),
-        routeName: route.shortName,
-        directionName: direction.name,
-        stopName: stop.name
+        timeRangeEnd: timeRangeEnd()
       })
 
       props.onSubscriptionCreated(sub)

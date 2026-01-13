@@ -81,11 +81,8 @@ describe("DatabaseService (Mock)", () => {
 
         const sub = yield* db.addSubscription("device-123", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"
@@ -109,11 +106,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.upsertDevice("device-123")
         const sub = yield* db.addSubscription("device-123", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"
@@ -144,11 +138,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.upsertDevice("device-123")
         const sub = yield* db.addSubscription("device-123", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"
@@ -172,11 +163,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.upsertDevice("device-123")
         yield* db.addSubscription("device-123", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"
@@ -208,11 +196,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.updatePushSubscription("device-1", "https://push/1", "key1", "auth1")
         yield* db.addSubscription("device-1", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"
@@ -222,11 +207,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.updatePushSubscription("device-2", "https://push/2", "key2", "auth2")
         yield* db.addSubscription("device-2", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 10,
           timeRangeStart: "06:00",
           timeRangeEnd: "23:00"
@@ -236,11 +218,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.upsertDevice("device-3")
         yield* db.addSubscription("device-3", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-2",
-          stopName: "Other Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"
@@ -264,11 +243,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.upsertDevice("device-1")
         yield* db.addSubscription("device-1", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"
@@ -277,11 +253,8 @@ describe("DatabaseService (Mock)", () => {
         yield* db.upsertDevice("device-2")
         yield* db.addSubscription("device-2", {
           routeId: "route-1",
-          routeName: "Route 1",
           directionId: "dir-1",
-          directionName: "Outbound",
           stopId: "stop-1",
-          stopName: "Main Street",
           notifyMinutes: 10,
           timeRangeStart: "06:00",
           timeRangeEnd: "23:00"
@@ -289,11 +262,8 @@ describe("DatabaseService (Mock)", () => {
 
         yield* db.addSubscription("device-2", {
           routeId: "route-2",
-          routeName: "Route 2",
           directionId: "dir-2",
-          directionName: "Inbound",
           stopId: "stop-2",
-          stopName: "Other Street",
           notifyMinutes: 5,
           timeRangeStart: "07:00",
           timeRangeEnd: "22:00"

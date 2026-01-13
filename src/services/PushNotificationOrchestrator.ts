@@ -1,6 +1,7 @@
 import { Config, Effect, Ref, Schedule } from "effect"
 import { DatabaseService } from "../db/index.ts"
 import { AggieSpiritApi } from "./AggieSpiritApi.ts"
+import { NameResolver } from "./NameResolver.ts"
 import { type PushPayload, WebPushService } from "./WebPushService.ts"
 
 /**
@@ -15,6 +16,7 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
       const api = yield* AggieSpiritApi
       const database = yield* DatabaseService
       const pushService = yield* WebPushService
+      const nameResolver = yield* NameResolver
 
       // Track which notifications we've already sent to avoid duplicates
       // Key: "deviceId:subscriptionId:arrivalEpoch"
@@ -129,9 +131,17 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
 
               // Send notification!
               const minutesAway = Math.round((arrivalMs - Date.now()) / 60000)
+
+              // Resolve names for the notification
+              const names = yield* nameResolver.resolveNames(
+                subscription.routeId,
+                subscription.directionId,
+                subscription.stopId
+              )
+
               const payload: PushPayload = {
-                title: `${subscription.routeName} arriving soon!`,
-                body: `${minutesAway} min away at ${subscription.stopName}`,
+                title: `${names.routeName} arriving soon!`,
+                body: `${minutesAway} min away at ${names.stopName}`,
                 tag: `arrival-${subscription.id}`,
                 data: {
                   subscriptionId: subscription.id,
@@ -143,7 +153,7 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
 
               yield* pushService.sendNotification(device, payload)
               yield* Effect.logInfo(
-                `Sent push notification to device ${device.id.slice(0, 8)}... for ${subscription.routeName}`
+                `Sent push notification to device ${device.id.slice(0, 8)}... for ${names.routeName}`
               )
 
               // Mark as sent
@@ -177,6 +187,6 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
 
       return {}
     }),
-    dependencies: [AggieSpiritApi.Default, DatabaseService.Default, WebPushService.Default]
+    dependencies: [AggieSpiritApi.Default, DatabaseService.Default, WebPushService.Default, NameResolver.Default]
   }
 ) {}

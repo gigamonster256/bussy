@@ -26,6 +26,7 @@ export const devices = mysqlTable("devices", {
 /**
  * Subscriptions table - stores notification preferences
  * Uses UUID string as primary key
+ * Foreign key to devices table with cascade delete
  */
 export const subscriptions = mysqlTable(
   "subscriptions",
@@ -33,13 +34,12 @@ export const subscriptions = mysqlTable(
     id: varchar("id", { length: 36 })
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    deviceId: varchar("device_id", { length: 36 }).notNull(),
+    deviceId: varchar("device_id", { length: 36 })
+      .notNull()
+      .references(() => devices.id, { onDelete: "cascade" }),
     routeId: varchar("route_id", { length: 64 }).notNull(),
-    routeName: varchar("route_name", { length: 255 }).notNull(),
     directionId: varchar("direction_id", { length: 64 }).notNull(),
-    directionName: varchar("direction_name", { length: 255 }).notNull(),
     stopId: varchar("stop_id", { length: 64 }).notNull(),
-    stopName: varchar("stop_name", { length: 255 }).notNull(),
     notifyMinutes: tinyint("notify_minutes").notNull().default(5),
     timeRangeStart: varchar("time_range_start", { length: 5 }).notNull().default("00:00"),
     timeRangeEnd: varchar("time_range_end", { length: 5 }).notNull().default("23:59"),

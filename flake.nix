@@ -70,7 +70,10 @@
                   ...
                 }:
                 {
-                  packages = [ pkgs.bun ] ++ lib.optional pkgs.stdenv.isLinux pkgs.inotify-tools;
+                  packages = [ 
+                    pkgs.bun
+                    pkgs.imagemagick
+                  ] ++ lib.optional pkgs.stdenv.isLinux pkgs.inotify-tools;
                   languages.typescript.enable = true;
                   services.mysql = {
                     enable = true;

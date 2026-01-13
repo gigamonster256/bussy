@@ -20,6 +20,7 @@ import {
 } from "../mocks/WebPushService.ts"
 import { HttpApp as AppHttpApp } from "../../src/server/index.ts"
 import { MetadataCache } from "../../src/services/MetadataCache.ts"
+import { NameResolver } from "../../src/services/NameResolver.ts"
 import type { Route, Stop } from "../../src/shared/domain.ts"
 
 // ============================================================================
@@ -90,6 +91,13 @@ const MockMetadataCacheLayer = MetadataCache.DefaultWithoutDependencies.pipe(
 )
 
 /**
+ * Mock NameResolver that uses the mock MetadataCache
+ */
+const MockNameResolverLayer = NameResolver.DefaultWithoutDependencies.pipe(
+  Layer.provide(MockMetadataCacheLayer)
+)
+
+/**
  * Test config provider with all required config values
  */
 const TestConfigProvider = ConfigProvider.fromJson({
@@ -102,6 +110,7 @@ const TestConfigProvider = ConfigProvider.fromJson({
 const TestLayer = Layer.mergeAll(
   MockAggieSpiritApiLayer,
   MockMetadataCacheLayer,
+  MockNameResolverLayer,
   WebPushServiceMock,
   DatabaseService.Default,
   BunContext.layer // Provides HttpPlatform for file operations

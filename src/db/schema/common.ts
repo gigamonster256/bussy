@@ -17,16 +17,14 @@ export interface Device {
 
 /**
  * Subscription record - represents a user's notification preference for a route/stop
+ * Human-readable names are resolved at runtime via NameResolver service
  */
 export interface Subscription {
   id: string
   deviceId: string
   routeId: string
-  routeName: string
   directionId: string
-  directionName: string
   stopId: string
-  stopName: string
   notifyMinutes: number
   timeRangeStart: string
   timeRangeEnd: string

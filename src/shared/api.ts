@@ -33,10 +33,6 @@ export interface CreateSubscriptionRequest {
   readonly notifyMinutes: number
   readonly timeRangeStart: string // "HH:mm" 24h format
   readonly timeRangeEnd: string // "HH:mm" 24h format
-  // Human-readable names (for display purposes, cached from metadata)
-  readonly routeName: string
-  readonly directionName: string
-  readonly stopName: string
 }
 
 /** Stored subscription with server-generated ID */

@@ -159,11 +159,8 @@ function createOperations(
             id,
             deviceId,
             routeId: subscription.routeId,
-            routeName: subscription.routeName,
             directionId: subscription.directionId,
-            directionName: subscription.directionName,
             stopId: subscription.stopId,
-            stopName: subscription.stopName,
             notifyMinutes: subscription.notifyMinutes,
             timeRangeStart: subscription.timeRangeStart,
             timeRangeEnd: subscription.timeRangeEnd
@@ -225,11 +222,7 @@ function createOperations(
     deleteDevice: (deviceId) =>
       Effect.tryPromise({
         try: async () => {
-          // Delete all subscriptions first (foreign key constraint)
-          await db
-            .delete(schema.subscriptions)
-            .where(eq(schema.subscriptions.deviceId, deviceId))
-          // Then delete the device
+          // FK constraint with ON DELETE CASCADE handles subscriptions automatically
           await db
             .delete(schema.devices)
             .where(eq(schema.devices.id, deviceId))

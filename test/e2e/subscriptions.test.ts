@@ -34,7 +34,7 @@ describe("E2E: Subscriptions", () => {
     notifyMinutes: 5,
     timeRangeStart: "07:00",
     timeRangeEnd: "22:00",
-    routeName: "Test Route 1",
+    routeName: "T1",
     directionName: "Outbound",
     stopName: "Main Street Station"
   }

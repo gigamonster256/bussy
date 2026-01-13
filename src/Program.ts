@@ -4,6 +4,7 @@ import { DatabaseService } from "./db/index.ts"
 import { ServerConfigLive, ServerLive } from "./server/index.ts"
 import { AggieSpiritApi } from "./services/AggieSpiritApi.ts"
 import { MetadataCache } from "./services/MetadataCache.ts"
+import { NameResolver } from "./services/NameResolver.ts"
 import { PushNotificationOrchestrator } from "./services/PushNotificationOrchestrator.ts"
 import { TracingLayer } from "./services/Tracing.ts"
 import { WebPushService } from "./services/WebPushService.ts"
@@ -14,6 +15,7 @@ const MainLayer = Layer.mergeAll(
   ServerConfigLive,
   AggieSpiritApi.Default,
   MetadataCache.Default,
+  NameResolver.Default,
   PushNotificationOrchestrator.Default,
   DatabaseService.Default,
   WebPushService.Default

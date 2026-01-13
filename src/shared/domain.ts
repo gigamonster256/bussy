@@ -50,9 +50,6 @@ export interface Subscription {
   readonly notifyMinutes: number
   readonly timeRangeStart: string // "HH:mm" 24h
   readonly timeRangeEnd: string // "HH:mm" 24h
-  readonly routeName: string
-  readonly directionName: string
-  readonly stopName: string
 }
 
 export interface AuthHeaders {
