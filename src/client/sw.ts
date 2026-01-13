@@ -55,7 +55,7 @@ self.addEventListener("push", (event) => {
   const options: NotificationOptions & { actions?: Array<{ action: string; title: string }> } = {
     body: payload.body,
     icon: payload.icon || "/icon-192.png",
-    badge: payload.badge || "/badge-72.png",
+    badge: payload.badge || "/icon-192.png",
     tag: payload.tag || "bus-notification",
     data: payload.data || {},
     requireInteraction: true, // Keep notification visible until user interacts

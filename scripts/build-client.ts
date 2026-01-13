@@ -118,7 +118,9 @@ async function buildFavicons() {
   const sizes = [
     { name: "favicon-16.png", size: 16 },
     { name: "favicon-32.png", size: 32 },
-    { name: "apple-touch-icon.png", size: 180 }
+    { name: "apple-touch-icon.png", size: 180 },
+    { name: "icon-192.png", size: 192 },
+    { name: "icon-512.png", size: 512 }
   ]
 
   for (const { name, size } of sizes) {
@@ -154,6 +156,18 @@ async function buildFavicons() {
   console.log(`  - ${outDir}/favicon.ico (${(icoSize / 1024).toFixed(2)} KB)`)
 }
 
+async function copyManifest() {
+  console.log("Copying web app manifest...")
+
+  const inputPath = "./src/client/manifest.webmanifest"
+  const outputPath = "./dist/client/manifest.webmanifest"
+
+  await Bun.write(outputPath, Bun.file(inputPath))
+
+  const size = Bun.file(outputPath).size
+  console.log(`  - ${outputPath} (${(size / 1024).toFixed(2)} KB)`)
+}
+
 async function buildClient() {
   console.log(`Building client (${isDev ? "development" : "production"})...`)
 
@@ -161,11 +175,12 @@ async function buildClient() {
   try {
     const files = readdirSync("./dist/client")
     for (const file of files) {
-      // Remove old hashed JS and CSS files, and old manifest
+      // Remove old hashed JS and CSS files, and old manifests
       if (
         (file.startsWith("index.") && file.endsWith(".js")) ||
         (file.startsWith("style.") && file.endsWith(".css")) ||
-        file === "manifest.json"
+        file === "manifest.json" ||
+        file === "asset-manifest.json"
       ) {
         rmSync(`./dist/client/${file}`)
       }
@@ -237,12 +252,15 @@ async function buildClient() {
   // Build favicons from SVG
   await buildFavicons()
 
+  // Copy web app manifest
+  await copyManifest()
+
   // Build index.html with asset paths substituted
   await buildHTML()
 
-  // Write manifest for server to read
-  await Bun.write("./dist/client/manifest.json", JSON.stringify(manifest, null, 2))
-  console.log(`\nManifest:`, manifest)
+  // Write asset manifest for server to read (tracks hashed filenames)
+  await Bun.write("./dist/client/asset-manifest.json", JSON.stringify(manifest, null, 2))
+  console.log(`\nAsset manifest:`, manifest)
 }
 
 async function buildHTML() {
