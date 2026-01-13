@@ -417,7 +417,7 @@ export default function App() {
         <div class="flex items-center justify-between text-xs text-gray-400">
           <span>Bussy</span>
           <span onClick={handleDevModeToggle} class="cursor-pointer select-none">
-            v1.0{devMode() ? "-dev" : ""}
+            v{__APP_VERSION__}{devMode() ? "-dev" : ""}
           </span>
         </div>
       </footer>

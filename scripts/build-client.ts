@@ -38,6 +38,10 @@ const solidPlugin: BunPlugin = {
 const isDev = process.argv.includes("--dev")
 const isWatch = process.argv.includes("--watch")
 
+// Get version from environment variable (for Nix builds) or package.json
+const packageJson = await Bun.file("./package.json").json()
+const APP_VERSION = process.env.APP_VERSION ?? packageJson.version ?? "0.0.0"
+
 // Manifest to track hashed filenames
 const manifest: Record<string, string> = {}
 
@@ -94,6 +98,21 @@ async function buildFavicons() {
   // Copy the SVG
   await Bun.write(`${outDir}/favicon.svg`, Bun.file(inputPath))
   console.log(`  - ${outDir}/favicon.svg`)
+
+  // Check if ImageMagick is available by trying to run it
+  let hasMagick = false
+  try {
+    const testProc = Bun.spawn(["magick", "--version"], { stdout: "ignore", stderr: "ignore" })
+    await testProc.exited
+    hasMagick = testProc.exitCode === 0
+  } catch {
+    hasMagick = false
+  }
+
+  if (!hasMagick) {
+    console.log("  (skipping PNG/ICO generation - ImageMagick not found)")
+    return
+  }
 
   // Generate PNGs and ICO using ImageMagick
   const sizes = [
@@ -166,7 +185,8 @@ async function buildClient() {
     sourcemap: isDev ? "inline" : "none",
     naming: isDev ? "[name].[ext]" : "[name].[hash].[ext]",
     define: {
-      "process.env.NODE_ENV": isDev ? "\"development\"" : "\"production\""
+      "process.env.NODE_ENV": isDev ? "\"development\"" : "\"production\"",
+      "__APP_VERSION__": JSON.stringify(APP_VERSION)
     }
   })
 

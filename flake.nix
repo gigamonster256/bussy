@@ -28,28 +28,30 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-
-          # # also see https://gist.github.com/NobbZ/1603ba65e135bf293a50c4b98eb41f71 for smaller image sizes
-          mixNixDeps = pkgs.callPackages ./deps.nix { beamPackages = pkgs.beamMinimalPackages; };
         in
-        rec {
+        {
+          default = self.packages.${system}.bussy;
+          bussy = pkgs.callPackage ./package.nix { };
           devenv-up = self.devShells.${system}.default.config.procfileScript;
 
-          # docker = pkgs.dockerTools.buildLayeredImage {
-          #   name = "portal";
-          #   tag = "latest";
-          #   # put 'server' and 'migrate' in /bin for overriding Cmd
-          #   contents = [ portal ];
-          #   config.Cmd = [ "${portal}/bin/server" ];
-          #   config.Env = [
-          #     # locale info
-          #     "LC_ALL=C.UTF-8"
-          #     # do not try to set up name with epmd (not a clustered app)
-          #     "RELEASE_DISTRIBUTION=none"
-          #   ];
-          # };
+          docker = pkgs.dockerTools.buildLayeredImage {
+            name = "bussy";
+            tag = "latest";
+            # contents = [ self.packages.${system}.bussy ];
+            config.Cmd = [ "${pkgs.lib.getExe self.packages.${system}.bussy}" ];
+            config.Env = [
+              "LC_ALL=C.UTF-8"
+            ];
+          };
         }
       );
+
+      overlays = {
+        default = self.overlays.bussy;
+        bussy = final: prev: {
+          inherit (self.packages.${prev.stdenv.hostPlatform.system}) bussy;
+        };
+      };
 
       formatter = forEachSystem (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
@@ -70,10 +72,11 @@
                   ...
                 }:
                 {
-                  packages = [ 
+                  packages = [
                     pkgs.bun
                     pkgs.imagemagick
-                  ] ++ lib.optional pkgs.stdenv.isLinux pkgs.inotify-tools;
+                  ]
+                  ++ lib.optional pkgs.stdenv.isLinux pkgs.inotify-tools;
                   languages.typescript.enable = true;
                   services.mysql = {
                     enable = true;
