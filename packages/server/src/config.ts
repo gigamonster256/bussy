@@ -15,9 +15,6 @@ const defaults = ConfigProvider.fromJson({
   POLLING_FREQUENT_INTERVAL: "2 minutes",
   POLLING_LAZY_INTERVAL: "5 minutes",
 
-  // Telemetry
-  TRACING_EXPORTER: "otlp", // "console" or "otlp"
-
   // Web Push
   VAPID_SUBJECT: "mailto:admin@example.com"
 })

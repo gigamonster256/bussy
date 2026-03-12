@@ -6,12 +6,10 @@ import { AggieSpiritApi } from "./services/AggieSpiritApi"
 import { MetadataCache } from "./services/MetadataCache"
 import { NameResolver } from "./services/NameResolver"
 import { PushNotificationOrchestrator } from "./services/PushNotificationOrchestrator"
-import { TracingLayer } from "./services/Tracing"
 import { WebPushService } from "./services/WebPushService"
 
 // Compose the application layer with all production dependencies
 const MainLayer = Layer.mergeAll(
-  TracingLayer,
   ServerConfigLive,
   AggieSpiritApi.Default,
   MetadataCache.Default,
