@@ -1,6 +1,6 @@
 import { Cache, Config, Duration, Effect } from "effect"
 import type { Stop } from "../shared/domain"
-import { AggieSpiritApi } from "./AggieSpiritApi.ts"
+import { AggieSpiritApi } from "./AggieSpiritApi"
 
 export class MetadataCache extends Effect.Service<MetadataCache>()("MetadataCache", {
   effect: Effect.gen(function*() {

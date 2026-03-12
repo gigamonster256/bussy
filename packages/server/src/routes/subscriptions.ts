@@ -1,9 +1,9 @@
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
-import { DatabaseService } from "../../db/index.ts"
-import { NameResolver } from "../../services/NameResolver.ts"
-import type { CreateSubscriptionRequest } from "@bussy/shared/api"
-import { errorResponse, withDefectHandler } from "../helpers/responses.ts"
+import { DatabaseService } from "../db"
+import { NameResolver } from "../services/NameResolver"
+import type { CreateSubscriptionRequest } from "../shared/api"
+import { errorResponse, withDefectHandler } from "../helpers/responses"
 
 /**
  * Subscription CRUD routes

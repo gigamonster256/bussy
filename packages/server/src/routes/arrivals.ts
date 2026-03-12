@@ -1,9 +1,9 @@
 import { HttpRouter, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
-import { DatabaseService } from "../../db/index.ts"
-import { AggieSpiritApi } from "../../services/AggieSpiritApi.ts"
-import { arrivalToResponse } from "@bussy/shared/api"
-import { withDefectHandler } from "../helpers/responses.ts"
+import { DatabaseService } from "../db"
+import { AggieSpiritApi } from "../services/AggieSpiritApi"
+import { arrivalToResponse } from "../shared/api"
+import { withDefectHandler } from "../helpers/responses"
 
 /**
  * Arrivals routes

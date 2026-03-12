@@ -3,7 +3,7 @@
  * These types define the contract for all REST endpoints.
  */
 
-import type { Arrival, Direction, Route, Stop } from "../domain.ts"
+import type { Arrival, Direction, Route, Stop } from "./domain"
 
 // ============================================================================
 // Device Management

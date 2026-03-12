@@ -75,6 +75,7 @@
                   packages = [
                     pkgs.bun
                     pkgs.imagemagick
+                    pkgs.python3
                   ]
                   ++ lib.optional pkgs.stdenv.isLinux pkgs.inotify-tools;
                   languages.typescript.enable = true;

@@ -1,15 +1,15 @@
 import { HttpServer } from "@effect/platform"
 import { BunHttpServer } from "@effect/platform-bun"
 import { Config, Context, Effect, Layer } from "effect"
-import { DatabaseService } from "../db/index.ts"
-import { AggieSpiritApi } from "../services/AggieSpiritApi.ts"
-import { MetadataCache } from "../services/MetadataCache.ts"
-import { NameResolver } from "../services/NameResolver.ts"
-import { WebPushService } from "../services/WebPushService.ts"
-import { apiRouter } from "./routes/index.ts"
+import { DatabaseService } from "./db"
+import { AggieSpiritApi } from "./services/AggieSpiritApi"
+import { MetadataCache } from "./services/MetadataCache"
+import { NameResolver } from "./services/NameResolver"
+import { WebPushService } from "./services/WebPushService"
+import { apiRouter } from "./routes"
 
 // Re-export route modules for testing
-export * from "./routes/index.ts"
+export * from "./routes"
 
 /**
  * The HTTP router as an Effect.

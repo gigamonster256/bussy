@@ -5,12 +5,12 @@ import { migrate } from "drizzle-orm/mysql2/migrator"
 import { Config, Effect, Redacted } from "effect"
 import type { Pool } from "mysql2/promise"
 import { createPool } from "mysql2/promise"
-import type { Subscription as DomainSubscription } from "../../packages/server/src/shared/domain.ts"
-import type { Device, Subscription } from "./schema/common.ts"
-import * as schema from "./schema/mysql.ts"
+import type { Subscription as DomainSubscription } from "../shared/domain"
+import type { Device, Subscription } from "./schema/common"
+import * as schema from "./schema"
 
 // Re-export types
-export type { Device, Subscription } from "./schema/common.ts"
+export type { Device, Subscription } from "./schema/common"
 
 /**
  * Database operations interface
@@ -71,7 +71,7 @@ export class DatabaseService extends Effect.Service<DatabaseService>()("Database
 
     // Run migrations
     yield* Effect.tryPromise({
-      try: () => migrate(db, { migrationsFolder: "./drizzle" }),
+      try: () => migrate(db, { migrationsFolder: "./migrations" }),
       catch: (e) => new Error(`MySQL migration failed: ${e}`)
     })
 

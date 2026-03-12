@@ -1,8 +1,8 @@
 import { Config, Effect, Ref, Schedule } from "effect"
-import { DatabaseService } from "../db/index.ts"
-import { AggieSpiritApi } from "./AggieSpiritApi.ts"
-import { NameResolver } from "./NameResolver.ts"
-import { type PushPayload, WebPushService } from "./WebPushService.ts"
+import { DatabaseService } from "../db"
+import { AggieSpiritApi } from "./AggieSpiritApi"
+import { NameResolver } from "./NameResolver"
+import { type PushPayload, WebPushService } from "./WebPushService"
 
 /**
  * Push Notification Orchestrator

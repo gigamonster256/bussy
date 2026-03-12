@@ -1,7 +1,7 @@
 import { Effect } from "effect"
-import type { Subscription } from "../db/schema/common.ts"
+import type { Subscription } from "../db/schema/common"
 import type { SubscriptionResponse } from "../shared/api"
-import { MetadataCache } from "./MetadataCache.ts"
+import { MetadataCache } from "./MetadataCache"
 
 /**
  * Resolved names for a subscription's route, direction, and stop

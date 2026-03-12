@@ -1,7 +1,7 @@
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
-import { DatabaseService } from "../../db/index.ts"
-import { errorResponse, withDefectHandler } from "../helpers/responses.ts"
+import { DatabaseService } from "../db"
+import { errorResponse, withDefectHandler } from "../helpers/responses"
 
 /**
  * Device registration routes

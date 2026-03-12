@@ -1,13 +1,13 @@
 import { Effect, Layer } from "effect"
-import { Config } from "./config.ts"
-import { DatabaseService } from "./db/index.ts"
-import { ServerConfigLive, ServerLive } from "./server/index.ts"
-import { AggieSpiritApi } from "./services/AggieSpiritApi.ts"
-import { MetadataCache } from "./services/MetadataCache.ts"
-import { NameResolver } from "./services/NameResolver.ts"
-import { PushNotificationOrchestrator } from "./services/PushNotificationOrchestrator.ts"
-import { TracingLayer } from "./services/Tracing.ts"
-import { WebPushService } from "./services/WebPushService.ts"
+import { Config } from "./config"
+import { DatabaseService } from "./db"
+import { ServerConfigLive, ServerLive } from "."
+import { AggieSpiritApi } from "./services/AggieSpiritApi"
+import { MetadataCache } from "./services/MetadataCache"
+import { NameResolver } from "./services/NameResolver"
+import { PushNotificationOrchestrator } from "./services/PushNotificationOrchestrator"
+import { TracingLayer } from "./services/Tracing"
+import { WebPushService } from "./services/WebPushService"
 
 // Compose the application layer with all production dependencies
 const MainLayer = Layer.mergeAll(

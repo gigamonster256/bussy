@@ -1,11 +1,11 @@
-import { HttpRouter } from "@effect/platform"
-import { arrivalRoutes } from "./arrivals.ts"
-import { deviceRoutes } from "./devices.ts"
-import { healthRoutes } from "./health.ts"
-import { metadataRoutes } from "./metadata.ts"
-import { pushRoutes } from "./push.ts"
-import { staticRoutes } from "./static.ts"
-import { subscriptionRoutes } from "./subscriptions.ts"
+import { HttpRouter, HttpMiddleware } from "@effect/platform"
+import { arrivalRoutes } from "./arrivals"
+import { deviceRoutes } from "./devices"
+import { healthRoutes } from "./health"
+import { metadataRoutes } from "./metadata"
+import { pushRoutes } from "./push"
+import { staticRoutes } from "./static"
+import { subscriptionRoutes } from "./subscriptions"
 
 /**
  * Composed router with all API routes.
@@ -19,14 +19,15 @@ export const apiRouter = HttpRouter.empty.pipe(
   HttpRouter.concat(subscriptionRoutes),
   HttpRouter.concat(pushRoutes),
   HttpRouter.concat(arrivalRoutes),
-  HttpRouter.concat(staticRoutes)
+  HttpRouter.concat(staticRoutes),
+  HttpMiddleware.cors()
 )
 
 // Re-export individual route modules for testing
-export { arrivalRoutes } from "./arrivals.ts"
-export { deviceRoutes } from "./devices.ts"
-export { healthRoutes } from "./health.ts"
-export { metadataRoutes } from "./metadata.ts"
-export { pushRoutes } from "./push.ts"
-export { staticRoutes } from "./static.ts"
-export { subscriptionRoutes } from "./subscriptions.ts"
+export { arrivalRoutes } from "./arrivals"
+export { deviceRoutes } from "./devices"
+export { healthRoutes } from "./health"
+export { metadataRoutes } from "./metadata"
+export { pushRoutes } from "./push"
+export { staticRoutes } from "./static"
+export { subscriptionRoutes } from "./subscriptions"

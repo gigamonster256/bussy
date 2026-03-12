@@ -1,9 +1,9 @@
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
-import { DatabaseService } from "../../db/index.ts"
-import { WebPushService } from "../../services/WebPushService.ts"
-import type { RegisterPushRequest } from "@bussy/shared/api"
-import { errorResponse, withDefectHandler } from "../helpers/responses.ts"
+import { DatabaseService } from "../db"
+import { WebPushService } from "../services/WebPushService"
+import type { RegisterPushRequest } from "../shared/api"
+import { errorResponse, withDefectHandler } from "../helpers/responses"
 
 /**
  * Push notification routes

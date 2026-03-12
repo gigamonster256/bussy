@@ -1,7 +1,7 @@
 import { HttpRouter, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
-import { MetadataCache } from "../../services/MetadataCache.ts"
-import { withDefectHandler } from "../helpers/responses.ts"
+import { MetadataCache } from "../services/MetadataCache"
+import { withDefectHandler } from "../helpers/responses"
 
 /**
  * Metadata routes - routes, directions, stops
