@@ -49,11 +49,11 @@ export default function App() {
       const response = await api.getArrivalsBatch(deviceId())
       const mutableArrivals: Record<string, Array<ArrivalResponse>> = {}
       for (const [key, value] of Object.entries(response.arrivals)) {
-        // mutableArrivals[key] = [...value]
+        mutableArrivals[key] = [...value as Array<ArrivalResponse>]
       }
       setAllArrivals(mutableArrivals)
-      // const totalArrivals = Object.values(response.arrivals).reduce((sum, arr) => sum + arr.length, 0)
-      // log(`Updated: ${totalArrivals} arrivals`)
+      const totalArrivals = Object.values(mutableArrivals).reduce((sum, arr) => sum + arr.length, 0)
+      log(`Updated: ${totalArrivals} arrivals`)
     } catch (e) {
       log(`Polling error: ${e}`)
     }
