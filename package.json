@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.1",
   "type": "module",
-  "packageManager": "bun@1.3.5",
+  "packageManager": "bun@1.3.10",
   "license": "MIT",
   "description": "Texas A&M bus arrival notification service",
   "workspaces": [

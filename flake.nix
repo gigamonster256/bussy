@@ -1,8 +1,7 @@
 {
   inputs = {
     # nixpkgs.url = "github:cachix/devenv-nixpkgs/rolling";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    systems.url = "github:nix-systems/default";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     devenv.url = "github:cachix/devenv";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -17,11 +16,11 @@
       self,
       nixpkgs,
       devenv,
-      systems,
       ...
     }@inputs:
     let
-      forEachSystem = nixpkgs.lib.genAttrs (import systems);
+      systems = [ "x86_64-linux" ];
+      forEachSystem = nixpkgs.lib.genAttrs systems;
     in
     {
       packages = forEachSystem (
