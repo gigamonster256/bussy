@@ -6,11 +6,12 @@ import { Config, Effect, Redacted } from "effect"
 import type { Pool } from "mysql2/promise"
 import { createPool } from "mysql2/promise"
 import type { Subscription as DomainSubscription } from "../shared/domain"
-import type { Device, Subscription } from "./schema/common"
-import * as schema from "./schema"
+import type { Device } from "../device"
+import { Subscription } from "../subscription"
 
 // Re-export types
-export type { Device, Subscription } from "./schema/common"
+export type { Device } from "../device"
+export type { Subscription } from "../subscription"
 
 /**
  * Database operations interface

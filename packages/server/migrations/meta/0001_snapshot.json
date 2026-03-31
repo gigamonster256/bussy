@@ -1,130 +1,9 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "94e5b573-e93d-4359-9da4-08d04d7c82e0",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "55dc066d-6bed-4a70-baa3-e7931b4493d5",
+  "prevId": "94e5b573-e93d-4359-9da4-08d04d7c82e0",
   "tables": {
-    "subscriptions": {
-      "name": "subscriptions",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "device_id": {
-          "name": "device_id",
-          "type": "varchar(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "route_id": {
-          "name": "route_id",
-          "type": "varchar(64)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "direction_id": {
-          "name": "direction_id",
-          "type": "varchar(64)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "stop_id": {
-          "name": "stop_id",
-          "type": "varchar(64)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "notify_minutes": {
-          "name": "notify_minutes",
-          "type": "tinyint",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 5
-        },
-        "time_range_start": {
-          "name": "time_range_start",
-          "type": "varchar(5)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'00:00'"
-        },
-        "time_range_end": {
-          "name": "time_range_end",
-          "type": "varchar(5)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'23:59'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "idx_subscriptions_device_id": {
-          "name": "idx_subscriptions_device_id",
-          "columns": [
-            "device_id"
-          ],
-          "isUnique": false
-        },
-        "idx_subscriptions_route_stop": {
-          "name": "idx_subscriptions_route_stop",
-          "columns": [
-            "route_id",
-            "direction_id",
-            "stop_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "subscriptions_device_id_device_id_fk": {
-          "name": "subscriptions_device_id_device_id_fk",
-          "tableFrom": "subscriptions",
-          "tableTo": "device",
-          "columnsFrom": [
-            "device_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "subscriptions_id": {
-          "name": "subscriptions_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
     "device": {
       "name": "device",
       "columns": {
@@ -185,13 +64,141 @@
       },
       "uniqueConstraints": {},
       "checkConstraint": {}
+    },
+    "subscription": {
+      "name": "subscription",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "char(30)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "device_id": {
+          "name": "device_id",
+          "type": "char(30)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "route_id": {
+          "name": "route_id",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "direction_id": {
+          "name": "direction_id",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "stop_id": {
+          "name": "stop_id",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "notify_minutes": {
+          "name": "notify_minutes",
+          "type": "tinyint",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 5
+        },
+        "time_range_start": {
+          "name": "time_range_start",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'00:00'"
+        },
+        "time_range_end": {
+          "name": "time_range_end",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'23:59'"
+        },
+        "time_created": {
+          "name": "time_created",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "time_updated": {
+          "name": "time_updated",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)"
+        }
+      },
+      "indexes": {
+        "idx_subscriptions_device_id": {
+          "name": "idx_subscriptions_device_id",
+          "columns": [
+            "device_id"
+          ],
+          "isUnique": false
+        },
+        "idx_subscriptions_route_stop": {
+          "name": "idx_subscriptions_route_stop",
+          "columns": [
+            "route_id",
+            "direction_id",
+            "stop_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "subscription_device_id_device_id_fk": {
+          "name": "subscription_device_id_device_id_fk",
+          "tableFrom": "subscription",
+          "tableTo": "device",
+          "columnsFrom": [
+            "device_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "subscription_id": {
+          "name": "subscription_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
     }
   },
   "views": {},
   "_meta": {
     "schemas": {},
-    "tables": {},
-    "columns": {}
+    "tables": {
+      "\"subscriptions\"": "\"subscription\""
+    },
+    "columns": {
+      "\"subscription\".\"created_at\"": "\"subscription\".\"time_created\"",
+      "\"subscription\".\"updated_at\"": "\"subscription\".\"time_updated\""
+    }
   },
   "internal": {
     "tables": {},

@@ -4,7 +4,6 @@ import { deviceRoutes } from "./devices"
 import { healthRoutes } from "./health"
 import { metadataRoutes } from "./metadata"
 import { pushRoutes } from "./push"
-import { staticRoutes } from "./static"
 import { subscriptionRoutes } from "./subscriptions"
 
 /**
@@ -19,7 +18,6 @@ export const apiRouter = HttpRouter.empty.pipe(
   HttpRouter.concat(subscriptionRoutes),
   HttpRouter.concat(pushRoutes),
   HttpRouter.concat(arrivalRoutes),
-  HttpRouter.concat(staticRoutes),
   HttpMiddleware.cors()
 )
 
@@ -29,5 +27,4 @@ export { deviceRoutes } from "./devices"
 export { healthRoutes } from "./health"
 export { metadataRoutes } from "./metadata"
 export { pushRoutes } from "./push"
-export { staticRoutes } from "./static"
 export { subscriptionRoutes } from "./subscriptions"

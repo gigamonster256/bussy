@@ -22,6 +22,7 @@
     "drizzle-orm": "^0.45.1",
     "effect": "^3.17.7",
     "mysql2": "^3.16.0",
+    "ulid": "^3.0.2",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
