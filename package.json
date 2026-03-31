@@ -13,7 +13,7 @@
     "build": "bun --filter '*' build",
     "build:server": "bun --filter server build",
     "build:web": "bun --filter web build",
-    "dev": "bun --filter '*' dev",
+    "dev": "bun --filter '*' --parallel dev",
     "dev:server": "bun --filter server dev",
     "dev:web": "bun --filter web dev"
   }
