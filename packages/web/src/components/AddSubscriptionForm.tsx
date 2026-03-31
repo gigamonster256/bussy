@@ -2,7 +2,7 @@ import { createResource, createSignal, For } from "solid-js"
 import { api } from "../api/client.ts"
 
 interface AddSubscriptionFormProps {
-  deviceId: string
+  deviceID: string
   onSubscriptionCreated: (subscription: any) => void
   onLog: (msg: string) => void
 }
@@ -25,10 +25,10 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
     }
   })
 
-  const [directions] = createResource(selectedRouteId, async (routeId) => {
-    if (!routeId) return []
+  const [directions] = createResource(selectedRouteId, async (routeID) => {
+    if (!routeID) return []
     try {
-      return await api.getDirections(routeId)
+      return await api.getDirections(routeID)
     } catch (e) {
       props.onLog(`Error loading directions: ${e}`)
       return []
@@ -36,11 +36,11 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
   })
 
   const [stops] = createResource(
-    () => ({ routeId: selectedRouteId(), directionId: selectedDirectionId() }),
-    async ({ directionId, routeId }) => {
-      if (!routeId || !directionId) return []
+    () => ({ routeID: selectedRouteId(), directionID: selectedDirectionId() }),
+    async ({ directionID, routeID }) => {
+      if (!routeID || !directionID) return []
       try {
-        return await api.getStops(routeId, directionId)
+        return await api.getStops(routeID, directionID)
       } catch (e) {
         props.onLog(`Error loading stops: ${e}`)
         return []
@@ -52,14 +52,14 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
   const selectedDirection = () => directions()?.find((d) => d.id === selectedDirectionId())
   const selectedStop = () => stops()?.find((s) => s.code === selectedStopCode())
 
-  function handleRouteChange(routeId: string) {
-    setSelectedRouteId(routeId)
+  function handleRouteChange(routeID: string) {
+    setSelectedRouteId(routeID)
     setSelectedDirectionId("")
     setSelectedStopCode("")
   }
 
-  function handleDirectionChange(directionId: string) {
-    setSelectedDirectionId(directionId)
+  function handleDirectionChange(directionID: string) {
+    setSelectedDirectionId(directionID)
     setSelectedStopCode("")
   }
 
@@ -74,10 +74,10 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
 
     setIsCreating(true)
     try {
-      const sub = await api.createSubscription(props.deviceId, {
-        routeId: route.id,
-        directionId: direction.id,
-        stopId: stop.code,
+      const sub = await api.createSubscription(props.deviceID, {
+        routeID: route.id,
+        directionID: direction.id,
+        stopID: stop.code,
         notifyMinutes: notifyMinutes(),
         timeRangeStart: timeRangeStart(),
         timeRangeEnd: timeRangeEnd()

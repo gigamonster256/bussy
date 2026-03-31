@@ -85,12 +85,12 @@ export class AggieSpiritApi extends Effect.Service<AggieSpiritApi>()("AggieSpiri
       }),
 
       getPatternPaths: Effect.fn("AggieSpiritApi.getPatternPaths")(
-        function*(routeId: string, patternIds: Array<string>) {
+        function*(routeID: string, patternIds: Array<string>) {
           const headers = yield* auth.headers()
           // api.getPatternPaths takes (routeKey, auth)
-          const raw = (yield* Effect.promise(() => api.getPatternPaths([routeId], headers)).pipe(
+          const raw = (yield* Effect.promise(() => api.getPatternPaths([routeID], headers)).pipe(
             Effect.withSpan("aggie-spirit-api.getPatternPaths", {
-              attributes: { routeId, patternIds: patternIds.join(",") }
+              attributes: { routeID, patternIds: patternIds.join(",") }
             })
           )) as unknown as [ApiPatternPathsResponse]
 
@@ -98,7 +98,7 @@ export class AggieSpiritApi extends Effect.Service<AggieSpiritApi>()("AggieSpiri
           // For now, let's return a map of patternId -> { geometry: Point[], stops: Stop[] }
           return raw[0].patternPaths.map((pp) => ({
             patternId: pp.patternKey,
-            directionId: pp.directionKey,
+            directionID: pp.directionKey,
             geometry: pp.patternPoints.map((p) => ({
               lat: p.latitude,
               lon: p.longitude,
@@ -116,12 +116,12 @@ export class AggieSpiritApi extends Effect.Service<AggieSpiritApi>()("AggieSpiri
       ),
 
       getNextDepartureTimes: Effect.fn("AggieSpiritApi.getNextDepartureTimes")(
-        function*(routeId: string, directionIds: Array<string>, stopCode: string) {
+        function*(routeID: string, directionIDs: Array<string>, stopCode: string) {
           const headers = yield* auth.headers()
           const raw = (yield* Effect.promise(() =>
-            api.getNextDepartureTimes(routeId, directionIds, stopCode, headers)
+            api.getNextDepartureTimes(routeID, directionIDs, stopCode, headers)
           ).pipe(
-            Effect.withSpan("aggie-spirit-api.getNextDepartureTimes", { attributes: { routeId, stopCode } })
+            Effect.withSpan("aggie-spirit-api.getNextDepartureTimes", { attributes: { routeID, stopCode } })
           )) as unknown as ApiNextDepartureTimesResponse
 
           // console.log("Raw next departure times:", JSON.stringify(raw))
@@ -132,8 +132,8 @@ export class AggieSpiritApi extends Effect.Service<AggieSpiritApi>()("AggieSpiri
           //       const est = DateTime.unsafeMake(new Date("2026-01-08T05:06:49.710Z"))
           //       const sch = DateTime.unsafeMake(new Date(Date.now() + 5 * 60000))
           //       arrivals.push({
-          //         routeId,
-          //         directionId: directionIds[0],
+          //         routeID,
+          //         directionID: directionIDs[0],
           //         stopCode,
           //         estimatedDepartTimeUtc: est,
           //         scheduledDepartTimeUtc: sch,
@@ -151,8 +151,8 @@ export class AggieSpiritApi extends Effect.Service<AggieSpiritApi>()("AggieSpiri
                   : undefined
 
                 arrivals.push({
-                  routeId: rdt.routeKey,
-                  directionId: rdt.directionKey,
+                  routeID: rdt.routeKey,
+                  directionID: rdt.directionKey,
                   stopCode: raw.stopCode,
                   estimatedDepartTimeUtc: est,
                   scheduledDepartTimeUtc: sch,

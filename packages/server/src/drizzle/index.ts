@@ -1,25 +1,24 @@
-// import { drizzle } from "drizzle-orm/planetscale-serverless";
-// import { Resource } from "sst";
-// import { Client } from "@planetscale/database";
-// import { Log } from "../util/log";
-// export * from "drizzle-orm";
+import { Config, Layer } from "effect"
+import { MysqlDrizzle, layerWithConfig } from "@effect/sql-drizzle/Mysql"
+import { layerConfig as mysqlLayerConfig } from "@effect/sql-mysql2/MysqlClient"
+import { DrizzleConfig } from "drizzle-orm"
 
-// const client = new Client({
-//   host: Resource.Database.host,
-//   username: Resource.Database.username,
-//   password: Resource.Database.password,
-// });
 
-// const log = Log.create({ namespace: "drizzle" });
+export const MysqlLive = mysqlLayerConfig({
+    host: Config.string("MYSQL_HOST"),
+    port: Config.number("MYSQL_PORT"),
+    database: Config.string("MYSQL_DATABASE"),
+    username: Config.string("MYSQL_USERNAME"),
+    password: Config.redacted("MYSQL_PASSWORD"),
+})
 
-// export const db = drizzle(client, {
-//   logger:
-//     process.env.DRIZZLE_LOG === "true"
-//       ? {
-//           logQuery(query, params) {
-//             log.info("query", { query });
-//             log.info("params", { params });
-//           },
-//         }
-//       : undefined,
-// });
+const drizzleConfig: DrizzleConfig = {
+    // logger: true,
+}
+
+export const DrizzleLive = layerWithConfig(drizzleConfig)
+
+// TODO: scoped to gracefully shutdown the database connection when the server is stopped
+export const DatabaseLive = Layer.provideMerge(DrizzleLive, MysqlLive)
+
+export { MysqlDrizzle as DatabaseService }

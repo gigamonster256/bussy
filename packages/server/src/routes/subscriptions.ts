@@ -1,6 +1,6 @@
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
-import { DatabaseService } from "../db"
+import { DatabaseService } from "../drizzle"
 import { NameResolver } from "../services/NameResolver"
 import type { CreateSubscriptionRequest } from "../shared/api"
 import { errorResponse, withDefectHandler } from "../helpers/responses"
@@ -9,57 +9,57 @@ import { errorResponse, withDefectHandler } from "../helpers/responses"
  * Subscription CRUD routes
  */
 export const subscriptionRoutes = HttpRouter.empty.pipe(
-  // GET /api/v1/devices/:deviceId/subscriptions - List all subscriptions for a device
+  // GET /api/v1/devices/:deviceID/subscriptions - List all subscriptions for a device
   HttpRouter.get(
-    "/api/v1/devices/:deviceId/subscriptions",
+    "/api/v1/devices/:deviceID/subscriptions",
     Effect.gen(function*() {
       const database = yield* DatabaseService
       const nameResolver = yield* NameResolver
-      const { deviceId } = yield* HttpRouter.params
+      const { deviceID } = yield* HttpRouter.params
 
-      const subs = yield* database.getSubscriptions(deviceId!)
+      const subs = yield* database.getSubscriptions(deviceID!)
       const response = yield* Effect.all(
         subs.map((sub) => nameResolver.resolveSubscription(sub)),
         { concurrency: "unbounded" }
       )
       return yield* HttpServerResponse.json(response)
-    }).pipe(withDefectHandler("GET /api/v1/devices/:deviceId/subscriptions"))
+    }).pipe(withDefectHandler("GET /api/v1/devices/:deviceID/subscriptions"))
   ),
 
-  // POST /api/v1/devices/:deviceId/subscriptions - Create a new subscription
+  // POST /api/v1/devices/:deviceID/subscriptions - Create a new subscription
   HttpRouter.post(
-    "/api/v1/devices/:deviceId/subscriptions",
+    "/api/v1/devices/:deviceID/subscriptions",
     Effect.gen(function*() {
       const database = yield* DatabaseService
       const nameResolver = yield* NameResolver
-      const { deviceId } = yield* HttpRouter.params
+      const { deviceID } = yield* HttpRouter.params
       const req = yield* HttpServerRequest.HttpServerRequest
       const body = yield* req.json as Effect.Effect<CreateSubscriptionRequest>
 
       // Validate required fields
-      if (!body.routeId || !body.directionId || !body.stopId) {
+      if (!body.routeID || !body.directionID || !body.stopID) {
         return yield* errorResponse("BAD_REQUEST", "Missing required fields", 400)
       }
 
       // Ensure device exists
-      yield* database.upsertDevice(deviceId!)
+      yield* database.upsertDevice(deviceID!)
 
       // Create the subscription
-      const sub = yield* database.addSubscription(deviceId!, {
-        routeId: body.routeId,
-        directionId: body.directionId,
-        stopId: body.stopId,
+      const sub = yield* database.addSubscription(deviceID!, {
+        routeID: body.routeID,
+        directionID: body.directionID,
+        stopID: body.stopID,
         notifyMinutes: body.notifyMinutes ?? 5,
         timeRangeStart: body.timeRangeStart ?? "00:00",
         timeRangeEnd: body.timeRangeEnd ?? "23:59"
       })
 
-      yield* Effect.logInfo(`Created subscription ${sub.id} for device ${deviceId}`)
+      yield* Effect.logInfo(`Created subscription ${sub.id} for device ${deviceID}`)
 
       // Resolve names for response
       const response = yield* nameResolver.resolveSubscription(sub)
       return yield* HttpServerResponse.json(response, { status: 201 })
-    }).pipe(withDefectHandler("POST /api/v1/devices/:deviceId/subscriptions"))
+    }).pipe(withDefectHandler("POST /api/v1/devices/:deviceID/subscriptions"))
   ),
 
   // GET /api/v1/subscriptions/:id - Get a single subscription

@@ -1,13 +1,13 @@
-// TODO: use effect.Schema and match table
+// TODO: use effect Schema
 export interface Subscription {
   id: string
-  deviceId: string
-  routeId: string
-  directionId: string
-  stopId: string
+  deviceID: string
+  routeID: string
+  directionID: string
+  stopID: string
   notifyMinutes: number
   timeRangeStart: string
   timeRangeEnd: string
-  createdAt: Date
-  updatedAt: Date
+  timeCreated: Date
+  timeUpdated: Date
 }

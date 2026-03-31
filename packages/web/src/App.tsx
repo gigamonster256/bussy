@@ -17,7 +17,7 @@ import {
 import { setSubscriptionOrder, sortByOrder } from "./stores/subscriptionOrder.ts"
 
 export default function App() {
-  const [deviceId] = createSignal(getOrCreateDeviceId())
+  const [deviceID] = createSignal(getOrCreateDeviceId())
   const [devMode, setDevModeState] = createSignal(isDevMode())
   const [subscriptions, setSubscriptions] = createSignal<Array<SubscriptionResponse>>([])
   const [allArrivals, setAllArrivals] = createSignal<Record<string, Array<ArrivalResponse>>>({})
@@ -46,7 +46,7 @@ export default function App() {
   async function pollAllArrivals() {
     if (subscriptions().length === 0) return
     try {
-      const response = await api.getArrivalsBatch(deviceId())
+      const response = await api.getArrivalsBatch(deviceID())
       const mutableArrivals: Record<string, Array<ArrivalResponse>> = {}
       for (const [key, value] of Object.entries(response.arrivals)) {
         mutableArrivals[key] = [...value as Array<ArrivalResponse>]
@@ -79,14 +79,14 @@ export default function App() {
 
   onMount(async () => {
     try {
-      await api.registerDevice(deviceId())
+      await api.registerDevice(deviceID())
       setPushSupported(isPushSupported())
       if (isPushSupported()) {
         await registerServiceWorker()
         const subscribed = await isPushSubscribed()
         setPushEnabled(subscribed)
       }
-      const subs = await api.getSubscriptions(deviceId())
+      const subs = await api.getSubscriptions(deviceID())
       // Sort by saved order
       setSubscriptions(sortByOrder(subs as Array<SubscriptionResponse>))
       if (subs.length > 0 && getLiveUpdatesPreference()) {
@@ -106,10 +106,10 @@ export default function App() {
     setPushLoading(true)
     try {
       if (!enabled) {
-        const result = await unsubscribeFromPush(deviceId())
+        const result = await unsubscribeFromPush(deviceID())
         if (result.success) setPushEnabled(false)
       } else {
-        const result = await subscribeToPush(deviceId())
+        const result = await subscribeToPush(deviceID())
         if (result.success) setPushEnabled(true)
       }
     } finally {
@@ -163,7 +163,7 @@ export default function App() {
         stopPolling()
 
         // Delete device from server
-        await api.deleteDevice(deviceId())
+        await api.deleteDevice(deviceID())
 
         // Clear local storage
         clearDeviceId()
@@ -194,7 +194,7 @@ export default function App() {
             <h1 class="text-xl font-bold text-center">Bussy</h1>
             <Show when={devMode()}>
               <p class="text-center text-maroon-200 text-xs mt-0.5">
-                Device: {deviceId()}
+                Device: {deviceID()}
               </p>
             </Show>
           </div>
@@ -344,7 +344,7 @@ export default function App() {
 
         {/* Add Form */}
         <AddSubscriptionForm
-          deviceId={deviceId()}
+          deviceID={deviceID()}
           onSubscriptionCreated={handleSubscriptionCreated}
           onLog={log}
         />

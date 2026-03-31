@@ -34,8 +34,8 @@ export interface Stop {
 }
 
 export interface Arrival {
-  readonly routeId: string
-  readonly directionId: string
+  readonly routeID: string
+  readonly directionID: string
   readonly stopCode: string
   readonly estimatedDepartTimeUtc: DateTime.DateTime
   readonly scheduledDepartTimeUtc: DateTime.DateTime | undefined
@@ -44,9 +44,9 @@ export interface Arrival {
 }
 
 export interface Subscription {
-  readonly routeId: string
-  readonly directionId: string
-  readonly stopId: string
+  readonly routeID: string
+  readonly directionID: string
+  readonly stopID: string
   readonly notifyMinutes: number
   readonly timeRangeStart: string // "HH:mm" 24h
   readonly timeRangeEnd: string // "HH:mm" 24h

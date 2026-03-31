@@ -1,5 +1,5 @@
 import { Config, Effect, Ref, Schedule } from "effect"
-import { DatabaseService } from "../db"
+import { DatabaseService } from "../drizzle"
 import { AggieSpiritApi } from "./AggieSpiritApi"
 import { NameResolver } from "./NameResolver"
 import { type PushPayload, WebPushService } from "./WebPushService"
@@ -19,7 +19,7 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
       const nameResolver = yield* NameResolver
 
       // Track which notifications we've already sent to avoid duplicates
-      // Key: "deviceId:subscriptionId:arrivalEpoch"
+      // Key: "deviceID:subscriptionId:arrivalEpoch"
       const sentNotifications = yield* Ref.make(new Set<string>())
 
       // Clean up old notification keys (older than 1 hour)
@@ -86,16 +86,16 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
         // For each stop, get arrivals and check subscriptions
         for (const stop of activeStops) {
           const arrivals = yield* api
-            .getNextDepartureTimes(stop.routeId, [stop.directionId], stop.stopId)
+            .getNextDepartureTimes(stop.routeID, [stop.directionID], stop.stopID)
             .pipe(Effect.catchAll(() => Effect.succeed([])))
 
           if (arrivals.length === 0) continue
 
           // Get all devices/subscriptions for this stop
           const devicesWithSubs = yield* database.getDevicesForStop(
-            stop.routeId,
-            stop.directionId,
-            stop.stopId
+            stop.routeID,
+            stop.directionID,
+            stop.stopID
           )
 
           for (const { device, subscription } of devicesWithSubs) {
@@ -134,9 +134,9 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
 
               // Resolve names for the notification
               const names = yield* nameResolver.resolveNames(
-                subscription.routeId,
-                subscription.directionId,
-                subscription.stopId
+                subscription.routeID,
+                subscription.directionID,
+                subscription.stopID
               )
 
               const payload: PushPayload = {
@@ -145,8 +145,8 @@ export class PushNotificationOrchestrator extends Effect.Service<PushNotificatio
                 tag: `arrival-${subscription.id}`,
                 data: {
                   subscriptionId: subscription.id,
-                  routeId: subscription.routeId,
-                  stopId: subscription.stopId,
+                  routeID: subscription.routeID,
+                  stopID: subscription.stopID,
                   arrivalTime: arrivalMs
                 }
               }

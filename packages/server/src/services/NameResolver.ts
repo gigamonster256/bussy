@@ -1,5 +1,5 @@
 import { Effect } from "effect"
-import type { Subscription } from "../db/schema/common"
+import type { Subscription } from "../subscription"
 import type { SubscriptionResponse } from "../shared/api"
 import { MetadataCache } from "./MetadataCache"
 
@@ -15,52 +15,52 @@ export interface ResolvedNames {
 const nameResolverEffect = Effect.gen(function*() {
   const cache = yield* MetadataCache
 
-  const getRouteName = Effect.fn(function*(routeId: string) {
+  const getRouteName = Effect.fn(function*(routeID: string) {
     const routes = yield* cache.getRoutes()
-    const route = routes.find((r) => r.id === routeId)
+    const route = routes.find((r) => r.id === routeID)
     return route?.shortName ?? "Unknown Route"
   })
 
-  const getDirectionName = Effect.fn(function*(routeId: string, directionId: string) {
-    const directions = yield* cache.getDirections(routeId)
-    const direction = directions.find((d) => d.id === directionId)
+  const getDirectionName = Effect.fn(function*(routeID: string, directionID: string) {
+    const directions = yield* cache.getDirections(routeID)
+    const direction = directions.find((d) => d.id === directionID)
     return direction?.name ?? "Unknown Direction"
   })
 
-  const getStopName = Effect.fn(function*(routeId: string, directionId: string, stopId: string) {
-    const stops = yield* cache.getStops(routeId, directionId)
-    const stop = stops.find((s) => s.code === stopId)
+  const getStopName = Effect.fn(function*(routeID: string, directionID: string, stopID: string) {
+    const stops = yield* cache.getStops(routeID, directionID)
+    const stop = stops.find((s) => s.code === stopID)
     return stop?.name ?? "Unknown Stop"
   })
 
   const resolveNames = Effect.fn(function*(
-    routeId: string,
-    directionId: string,
-    stopId: string
+    routeID: string,
+    directionID: string,
+    stopID: string
   ) {
     const [routeName, directionName, stopName] = yield* Effect.all([
-      getRouteName(routeId),
-      getDirectionName(routeId, directionId),
-      getStopName(routeId, directionId, stopId)
+      getRouteName(routeID),
+      getDirectionName(routeID, directionID),
+      getStopName(routeID, directionID, stopID)
     ])
     return { routeName, directionName, stopName } as ResolvedNames
   })
 
   const resolveSubscription = Effect.fn(function*(sub: Subscription) {
-    const names = yield* resolveNames(sub.routeId, sub.directionId, sub.stopId)
+    const names = yield* resolveNames(sub.routeID, sub.directionID, sub.stopID)
     return {
       id: sub.id,
-      deviceId: sub.deviceId,
-      routeId: sub.routeId,
-      directionId: sub.directionId,
-      stopId: sub.stopId,
+      deviceID: sub.deviceID,
+      routeID: sub.routeID,
+      directionID: sub.directionID,
+      stopID: sub.stopID,
       notifyMinutes: sub.notifyMinutes,
       timeRangeStart: sub.timeRangeStart,
       timeRangeEnd: sub.timeRangeEnd,
       routeName: names.routeName,
       directionName: names.directionName,
       stopName: names.stopName,
-      createdAt: sub.createdAt.toISOString()
+      timeCreated: sub.timeCreated.toISOString()
     } as SubscriptionResponse
   })
 

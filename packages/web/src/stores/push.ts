@@ -60,7 +60,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
 // Subscribe to push notifications
 export async function subscribeToPush(
-  deviceId: string
+  deviceID: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!isPushSupported()) {
     return { success: false, error: "Push notifications not supported" }
@@ -88,7 +88,7 @@ export async function subscribeToPush(
 
     // Send subscription to server
     const subscriptionJson = subscription.toJSON()
-    await api.registerPushSubscription(deviceId, {
+    await api.registerPushSubscription(deviceID, {
       endpoint: subscriptionJson.endpoint!,
       keys: {
         p256dh: subscriptionJson.keys!.p256dh,
@@ -106,7 +106,7 @@ export async function subscribeToPush(
 
 // Unsubscribe from push notifications
 export async function unsubscribeFromPush(
-  deviceId: string
+  deviceID: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const registration = await navigator.serviceWorker.ready
@@ -117,7 +117,7 @@ export async function unsubscribeFromPush(
     }
 
     // Tell server to remove subscription
-    await api.unregisterPushSubscription(deviceId)
+    await api.unregisterPushSubscription(deviceID)
 
     console.log("Push subscription removed")
     return { success: true }

@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
 import { Config } from "./config"
-import { DatabaseService } from "./db"
+import { DatabaseService } from "./drizzle"
 import { ServerConfigLive, ServerLive } from "."
 import { AggieSpiritApi } from "./services/AggieSpiritApi"
 import { MetadataCache } from "./services/MetadataCache"

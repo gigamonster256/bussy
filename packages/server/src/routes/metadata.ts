@@ -16,21 +16,21 @@ export const metadataRoutes = HttpRouter.empty.pipe(
     }).pipe(withDefectHandler("GET /api/v1/routes"))
   ),
   HttpRouter.get(
-    "/api/v1/routes/:routeId/directions",
+    "/api/v1/routes/:routeID/directions",
     Effect.gen(function*() {
       const cache = yield* MetadataCache
-      const { routeId } = yield* HttpRouter.params
-      const directions = yield* cache.getDirections(routeId!)
+      const { routeID } = yield* HttpRouter.params
+      const directions = yield* cache.getDirections(routeID!)
       return yield* HttpServerResponse.json(directions)
-    }).pipe(withDefectHandler("GET /api/v1/routes/:routeId/directions"))
+    }).pipe(withDefectHandler("GET /api/v1/routes/:routeID/directions"))
   ),
   HttpRouter.get(
-    "/api/v1/routes/:routeId/directions/:directionId/stops",
+    "/api/v1/routes/:routeID/directions/:directionID/stops",
     Effect.gen(function*() {
       const cache = yield* MetadataCache
-      const { directionId, routeId } = yield* HttpRouter.params
-      const stops = yield* cache.getStops(routeId!, directionId!)
+      const { directionID, routeID } = yield* HttpRouter.params
+      const stops = yield* cache.getStops(routeID!, directionID!)
       return yield* HttpServerResponse.json(stops)
-    }).pipe(withDefectHandler("GET /api/v1/routes/:routeId/directions/:directionId/stops"))
+    }).pipe(withDefectHandler("GET /api/v1/routes/:routeID/directions/:directionID/stops"))
   )
 )

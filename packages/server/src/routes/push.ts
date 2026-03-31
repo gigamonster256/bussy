@@ -1,6 +1,6 @@
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
-import { DatabaseService } from "../db"
+import { DatabaseService } from "../drizzle"
 import { WebPushService } from "../services/WebPushService"
 import type { RegisterPushRequest } from "../shared/api"
 import { errorResponse, withDefectHandler } from "../helpers/responses"
@@ -19,12 +19,12 @@ export const pushRoutes = HttpRouter.empty.pipe(
     }).pipe(withDefectHandler("GET /api/v1/push/vapid-key"))
   ),
 
-  // POST /api/v1/devices/:deviceId/push - Register a push subscription for a device
+  // POST /api/v1/devices/:deviceID/push - Register a push subscription for a device
   HttpRouter.post(
-    "/api/v1/devices/:deviceId/push",
+    "/api/v1/devices/:deviceID/push",
     Effect.gen(function*() {
       const database = yield* DatabaseService
-      const { deviceId } = yield* HttpRouter.params
+      const { deviceID } = yield* HttpRouter.params
       const req = yield* HttpServerRequest.HttpServerRequest
       const body = yield* req.json as Effect.Effect<{ subscription: RegisterPushRequest["subscription"] }>
 
@@ -34,29 +34,29 @@ export const pushRoutes = HttpRouter.empty.pipe(
 
       // Update device with push subscription
       yield* database.updatePushSubscription(
-        deviceId!,
+        deviceID!,
         body.subscription.endpoint,
         body.subscription.keys.p256dh,
         body.subscription.keys.auth
       )
 
-      yield* Effect.logInfo(`Push subscription registered for device ${deviceId}`)
+      yield* Effect.logInfo(`Push subscription registered for device ${deviceID}`)
       return yield* HttpServerResponse.json({ success: true })
-    }).pipe(withDefectHandler("POST /api/v1/devices/:deviceId/push"))
+    }).pipe(withDefectHandler("POST /api/v1/devices/:deviceID/push"))
   ),
 
-  // DELETE /api/v1/devices/:deviceId/push - Unsubscribe from push notifications
+  // DELETE /api/v1/devices/:deviceID/push - Unsubscribe from push notifications
   HttpRouter.del(
-    "/api/v1/devices/:deviceId/push",
+    "/api/v1/devices/:deviceID/push",
     Effect.gen(function*() {
       const database = yield* DatabaseService
-      const { deviceId } = yield* HttpRouter.params
+      const { deviceID } = yield* HttpRouter.params
 
       // Clear push subscription from device
-      yield* database.updatePushSubscription(deviceId!, "", "", "")
+      yield* database.updatePushSubscription(deviceID!, "", "", "")
 
-      yield* Effect.logInfo(`Push subscription removed for device ${deviceId}`)
+      yield* Effect.logInfo(`Push subscription removed for device ${deviceID}`)
       return yield* HttpServerResponse.json({ success: true })
-    }).pipe(withDefectHandler("DELETE /api/v1/devices/:deviceId/push"))
+    }).pipe(withDefectHandler("DELETE /api/v1/devices/:deviceID/push"))
   )
 )

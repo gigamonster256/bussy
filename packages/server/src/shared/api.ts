@@ -12,24 +12,24 @@ import type { Arrival, Direction, Route, Stop } from "./domain"
 /** Request to register a new device */
 export interface RegisterDeviceRequest {
   /** Client-generated device ID (UUID) */
-  readonly deviceId: string
+  readonly deviceID: string
 }
 
 /** Response from device registration */
 export interface RegisterDeviceResponse {
-  readonly deviceId: string
-  readonly createdAt: string // ISO 8601
+  readonly deviceID: string
+  readonly timeCreated: string // ISO 8601
 }
 
 // ============================================================================
 // Subscriptions
 // ============================================================================
 
-/** Request to create a new subscription (deviceId comes from URL path) */
+/** Request to create a new subscription (deviceID comes from URL path) */
 export interface CreateSubscriptionRequest {
-  readonly routeId: string
-  readonly directionId: string
-  readonly stopId: string
+  readonly routeID: string
+  readonly directionID: string
+  readonly stopID: string
   readonly notifyMinutes: number
   readonly timeRangeStart: string // "HH:mm" 24h format
   readonly timeRangeEnd: string // "HH:mm" 24h format
@@ -38,17 +38,17 @@ export interface CreateSubscriptionRequest {
 /** Stored subscription with server-generated ID */
 export interface SubscriptionResponse {
   readonly id: string
-  readonly deviceId: string
-  readonly routeId: string
-  readonly directionId: string
-  readonly stopId: string
+  readonly deviceID: string
+  readonly routeID: string
+  readonly directionID: string
+  readonly stopID: string
   readonly notifyMinutes: number
   readonly timeRangeStart: string
   readonly timeRangeEnd: string
   readonly routeName: string
   readonly directionName: string
   readonly stopName: string
-  readonly createdAt: string // ISO 8601
+  readonly timeCreated: string // ISO 8601
 }
 
 /** List of subscriptions response */
@@ -66,8 +66,8 @@ export interface GetArrivalsRequest {
 
 /** JSON-serializable arrival (DateTime converted to ISO string) */
 export interface ArrivalResponse {
-  readonly routeId: string
-  readonly directionId: string
+  readonly routeID: string
+  readonly directionID: string
   readonly stopCode: string
   readonly estimatedDepartTimeUtc: string | null // ISO 8601
   readonly scheduledDepartTimeUtc: string | null // ISO 8601
@@ -93,7 +93,7 @@ export interface PushSubscriptionData {
   }
 }
 
-/** Request to register push subscription (deviceId comes from URL path) */
+/** Request to register push subscription (deviceID comes from URL path) */
 export interface RegisterPushRequest {
   readonly subscription: PushSubscriptionData
 }
@@ -131,8 +131,8 @@ export interface ApiErrorResponse {
 // ============================================================================
 
 export const arrivalToResponse = (arrival: Arrival): ArrivalResponse => ({
-  routeId: arrival.routeId,
-  directionId: arrival.directionId,
+  routeID: arrival.routeID,
+  directionID: arrival.directionID,
   stopCode: arrival.stopCode,
   estimatedDepartTimeUtc: arrival.estimatedDepartTimeUtc
     ? new Date(Number(arrival.estimatedDepartTimeUtc.epochMillis)).toISOString()

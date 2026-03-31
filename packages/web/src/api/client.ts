@@ -43,17 +43,17 @@ export const api = {
   /**
    * Register device with the server
    */
-  registerDevice: (deviceId: string): Promise<RegisterDeviceResponse> =>
+  registerDevice: (deviceID: string): Promise<RegisterDeviceResponse> =>
     fetchJson("/devices", {
       method: "POST",
-      body: JSON.stringify({ deviceId })
+      body: JSON.stringify({ deviceID })
     }),
 
   /**
    * Delete device and all associated data
    */
-  deleteDevice: (deviceId: string): Promise<{ success: boolean }> =>
-    fetchJson(`/devices/${encodeURIComponent(deviceId)}`, {
+  deleteDevice: (deviceID: string): Promise<{ success: boolean }> =>
+    fetchJson(`/devices/${encodeURIComponent(deviceID)}`, {
       method: "DELETE"
     }),
 
@@ -69,14 +69,14 @@ export const api = {
   /**
    * Get directions for a route
    */
-  getDirections: (routeId: string): Promise<DirectionsResponse> =>
-    fetchJson(`/routes/${encodeURIComponent(routeId)}/directions`),
+  getDirections: (routeID: string): Promise<DirectionsResponse> =>
+    fetchJson(`/routes/${encodeURIComponent(routeID)}/directions`),
 
   /**
    * Get stops for a route/direction
    */
-  getStops: (routeId: string, directionId: string): Promise<StopsResponse> =>
-    fetchJson(`/routes/${encodeURIComponent(routeId)}/directions/${encodeURIComponent(directionId)}/stops`),
+  getStops: (routeID: string, directionID: string): Promise<StopsResponse> =>
+    fetchJson(`/routes/${encodeURIComponent(routeID)}/directions/${encodeURIComponent(directionID)}/stops`),
 
   // ============================================================================
   // Subscriptions CRUD
@@ -85,14 +85,14 @@ export const api = {
   /**
    * Get all subscriptions for a device
    */
-  getSubscriptions: (deviceId: string): Promise<SubscriptionsListResponse> =>
-    fetchJson(`/devices/${encodeURIComponent(deviceId)}/subscriptions`),
+  getSubscriptions: (deviceID: string): Promise<SubscriptionsListResponse> =>
+    fetchJson(`/devices/${encodeURIComponent(deviceID)}/subscriptions`),
 
   /**
    * Create a new subscription
    */
-  createSubscription: (deviceId: string, subscription: CreateSubscriptionRequest): Promise<SubscriptionResponse> =>
-    fetchJson(`/devices/${encodeURIComponent(deviceId)}/subscriptions`, {
+  createSubscription: (deviceID: string, subscription: CreateSubscriptionRequest): Promise<SubscriptionResponse> =>
+    fetchJson(`/devices/${encodeURIComponent(deviceID)}/subscriptions`, {
       method: "POST",
       body: JSON.stringify(subscription)
     }),
@@ -118,12 +118,12 @@ export const api = {
    * Get arrivals for a specific stop
    */
   getArrivals: (
-    routeId: string,
-    directionId: string,
+    routeID: string,
+    directionID: string,
     stopCode: string
   ): Promise<Array<ArrivalResponse>> =>
     fetchJson(
-      `/routes/${encodeURIComponent(routeId)}/directions/${encodeURIComponent(directionId)}/stops/${
+      `/routes/${encodeURIComponent(routeID)}/directions/${encodeURIComponent(directionID)}/stops/${
         encodeURIComponent(stopCode)
       }/arrivals`
     ),
@@ -131,8 +131,8 @@ export const api = {
   /**
    * Batch arrivals - get arrivals for all device subscriptions
    */
-  getArrivalsBatch: (deviceId: string): Promise<GetArrivalsResponse> =>
-    fetchJson(`/devices/${encodeURIComponent(deviceId)}/arrivals`),
+  getArrivalsBatch: (deviceID: string): Promise<GetArrivalsResponse> =>
+    fetchJson(`/devices/${encodeURIComponent(deviceID)}/arrivals`),
 
   // ============================================================================
   // Push Notifications
@@ -146,8 +146,8 @@ export const api = {
   /**
    * Register push subscription with server
    */
-  registerPushSubscription: (deviceId: string, subscription: PushSubscriptionData): Promise<{ success: boolean }> =>
-    fetchJson(`/devices/${encodeURIComponent(deviceId)}/push`, {
+  registerPushSubscription: (deviceID: string, subscription: PushSubscriptionData): Promise<{ success: boolean }> =>
+    fetchJson(`/devices/${encodeURIComponent(deviceID)}/push`, {
       method: "POST",
       body: JSON.stringify({ subscription })
     }),
@@ -155,8 +155,8 @@ export const api = {
   /**
    * Unregister push subscription
    */
-  unregisterPushSubscription: (deviceId: string): Promise<{ success: boolean }> =>
-    fetchJson(`/devices/${encodeURIComponent(deviceId)}/push`, {
+  unregisterPushSubscription: (deviceID: string): Promise<{ success: boolean }> =>
+    fetchJson(`/devices/${encodeURIComponent(deviceID)}/push`, {
       method: "DELETE"
     }),
 

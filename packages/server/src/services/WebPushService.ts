@@ -1,6 +1,6 @@
 import { Config, Effect, Redacted } from "effect"
 import webPush from "web-push"
-import type { Device } from "../db/index.ts"
+import type { Device } from "../device"
 
 export interface PushPayload {
   readonly title: string
@@ -12,7 +12,7 @@ export interface PushPayload {
 }
 
 interface SendResult {
-  deviceId: string
+  deviceID: string
   success: boolean
   reason?: "no-subscription" | "expired" | "error"
 }
@@ -102,7 +102,7 @@ export class WebPushService extends Effect.Service<WebPushService>()("WebPushSer
             devices.map((device) =>
               Effect.gen(function*() {
                 if (!device.pushEndpoint) {
-                  return { deviceId: device.id, success: false, reason: "no-subscription" as const }
+                  return { deviceID: device.id, success: false, reason: "no-subscription" as const }
                 }
 
                 const subscription = {
@@ -126,18 +126,18 @@ export class WebPushService extends Effect.Service<WebPushService>()("WebPushSer
                   try: () => webPush.sendNotification(subscription, notificationPayload),
                   catch: (error) => error
                 }).pipe(
-                  Effect.map((): SendResult => ({ deviceId: device.id, success: true })),
+                  Effect.map((): SendResult => ({ deviceID: device.id, success: true })),
                   Effect.catchAll((error): Effect.Effect<SendResult> => {
                     const webPushError = error as { statusCode?: number }
                     if (webPushError.statusCode === 410 || webPushError.statusCode === 404) {
                       return Effect.succeed({
-                        deviceId: device.id,
+                        deviceID: device.id,
                         success: false,
                         reason: "expired" as const
                       })
                     }
                     return Effect.succeed({
-                      deviceId: device.id,
+                      deviceID: device.id,
                       success: false,
                       reason: "error" as const
                     })
@@ -153,7 +153,7 @@ export class WebPushService extends Effect.Service<WebPushService>()("WebPushSer
           // Return IDs of devices with expired subscriptions (for cleanup)
           const expired = results
             .filter((r) => !r.success && r.reason === "expired")
-            .map((r) => r.deviceId)
+            .map((r) => r.deviceID)
 
           const successCount = results.filter((r) => r.success).length
           yield* Effect.logInfo(

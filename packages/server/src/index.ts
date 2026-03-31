@@ -1,7 +1,7 @@
 import { HttpServer } from "@effect/platform"
 import { BunHttpServer } from "@effect/platform-bun"
 import { Config, Context, Effect, Layer } from "effect"
-import { DatabaseService } from "./db"
+import { DatabaseService } from "./drizzle"
 import { AggieSpiritApi } from "./services/AggieSpiritApi"
 import { MetadataCache } from "./services/MetadataCache"
 import { NameResolver } from "./services/NameResolver"

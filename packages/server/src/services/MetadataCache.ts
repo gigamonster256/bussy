@@ -20,21 +20,21 @@ export class MetadataCache extends Effect.Service<MetadataCache>()("MetadataCach
       capacity: 1000,
       timeToLive: yield* Config.duration("API_METADATA_TTL").pipe(Config.withDefault(Duration.minutes(10))),
       lookup: Effect.fn(function*(key: string) {
-        const [routeId, directionId] = key.split(":")
+        const [routeID, directionID] = key.split(":")
         const routes = yield* routesCache.get("routes")
 
-        const route = routes.find((r) => r.id === routeId)
+        const route = routes.find((r) => r.id === routeID)
         if (!route) return []
 
-        const direction = route.directionList.find((d) => d.id === directionId)
+        const direction = route.directionList.find((d) => d.id === directionID)
         if (!direction) return []
 
         const patternIds = direction.patternList.map((p) => p.id)
         if (patternIds.length === 0) return []
 
-        const patterns = yield* api.getPatternPaths(routeId, patternIds)
+        const patterns = yield* api.getPatternPaths(routeID, patternIds)
 
-        const pattern = patterns.filter((p) => p.directionId === directionId)
+        const pattern = patterns.filter((p) => p.directionID === directionID)
         if (pattern.length === 0) return []
 
         const stopsMap = new Map<string, Stop>()
@@ -53,14 +53,14 @@ export class MetadataCache extends Effect.Service<MetadataCache>()("MetadataCach
     return {
       getRoutes: Effect.fn(() => routesCache.get("routes")), // singleton cache so key doesnt matter
 
-      getDirections: Effect.fn(function*(routeId: string) {
+      getDirections: Effect.fn(function*(routeID: string) {
         const routes = yield* routesCache.get("routes")
-        const route = routes.find((r) => r.id === routeId)
+        const route = routes.find((r) => r.id === routeID)
         return route ? route.directionList : []
       }),
 
-      getStops: Effect.fn(function*(routeId: string, directionId: string) {
-        const cacheKey = `${routeId}:${directionId}`
+      getStops: Effect.fn(function*(routeID: string, directionID: string) {
+        const cacheKey = `${routeID}:${directionID}`
         return yield* stopsCache.get(cacheKey)
       })
     }
