@@ -1,10 +1,10 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js"
-import type { ArrivalResponse, SubscriptionResponse } from "server/src/shared/api"
+import type { ArrivalResponse, SubscriptionResponse } from "./api/client.ts"
 import { api } from "./api/client.ts"
 import { AddSubscriptionForm } from "./components/AddSubscriptionForm.tsx"
 import { SubscriptionCard } from "./components/SubscriptionCard.tsx"
 import { Toggle } from "./components/Toggle.tsx"
-import { clearDeviceId, getOrCreateDeviceId } from "./stores/device.ts"
+import { clearDeviceId, getDeviceId, saveDeviceId } from "./stores/device.ts"
 import { isDevMode, toggleDevMode } from "./stores/devMode.ts"
 import { getLiveUpdatesPreference, setLiveUpdatesPreference } from "./stores/liveUpdates.ts"
 import {
@@ -17,7 +17,7 @@ import {
 import { setSubscriptionOrder, sortByOrder } from "./stores/subscriptionOrder.ts"
 
 export default function App() {
-  const [deviceID] = createSignal(getOrCreateDeviceId())
+  const [deviceID, setDeviceID] = createSignal<string | null>(getDeviceId())
   const [devMode, setDevModeState] = createSignal(isDevMode())
   const [subscriptions, setSubscriptions] = createSignal<Array<SubscriptionResponse>>([])
   const [allArrivals, setAllArrivals] = createSignal<Record<string, Array<ArrivalResponse>>>({})
@@ -44,9 +44,9 @@ export default function App() {
   }
 
   async function pollAllArrivals() {
-    if (subscriptions().length === 0) return
+    if (subscriptions().length === 0 || !deviceID()) return
     try {
-      const response = await api.getArrivalsBatch(deviceID())
+      const response = await api.getArrivalsBatch(deviceID()!)
       const mutableArrivals: Record<string, Array<ArrivalResponse>> = {}
       for (const [key, value] of Object.entries(response.arrivals)) {
         mutableArrivals[key] = [...value as Array<ArrivalResponse>]
@@ -79,14 +79,25 @@ export default function App() {
 
   onMount(async () => {
     try {
-      await api.registerDevice(deviceID())
+      // Check if we already have a device ID, if not register with server
+      let currentDeviceID = deviceID()
+      if (!currentDeviceID) {
+        const device = await api.registerDevice()
+        setDeviceID(device.id)
+        saveDeviceId(device.id)
+        currentDeviceID = device.id
+        log(`Device registered: ${device.id}`)
+      } else {
+        log(`Using existing device: ${currentDeviceID}`)
+      }
+
       setPushSupported(isPushSupported())
       if (isPushSupported()) {
         await registerServiceWorker()
         const subscribed = await isPushSubscribed()
         setPushEnabled(subscribed)
       }
-      const subs = await api.getSubscriptions(deviceID())
+      const subs = await api.getSubscriptions(currentDeviceID)
       // Sort by saved order
       setSubscriptions(sortByOrder(subs as Array<SubscriptionResponse>))
       if (subs.length > 0 && getLiveUpdatesPreference()) {
@@ -102,14 +113,14 @@ export default function App() {
   })
 
   async function togglePush(enabled: boolean) {
-    if (pushLoading()) return
+    if (pushLoading() || !deviceID()) return
     setPushLoading(true)
     try {
       if (!enabled) {
-        const result = await unsubscribeFromPush(deviceID())
+        const result = await unsubscribeFromPush(deviceID()!)
         if (result.success) setPushEnabled(false)
       } else {
-        const result = await subscribeToPush(deviceID())
+        const result = await subscribeToPush(deviceID()!)
         if (result.success) setPushEnabled(true)
       }
     } finally {
@@ -162,15 +173,18 @@ export default function App() {
         // Stop polling
         stopPolling()
 
-        // Delete device from server
-        await api.deleteDevice(deviceID())
+        // Delete device from server if we have one
+        if (deviceID()) {
+          await api.deleteDevice(deviceID()!)
+        }
 
-        // Clear local storage
+        // Clear local storage and state
         clearDeviceId()
+        setDeviceID(null)
 
         log("Account reset successfully. Reloading...")
 
-        // Reload the page to get a fresh device ID
+        // Reload the page to register a new device
         window.location.reload()
       } catch (e) {
         setResetError(`Failed to reset: ${e}`)
@@ -194,7 +208,7 @@ export default function App() {
             <h1 class="text-xl font-bold text-center">Bussy</h1>
             <Show when={devMode()}>
               <p class="text-center text-maroon-200 text-xs mt-0.5">
-                Device: {deviceID()}
+                Device: {deviceID() ?? "Registering..."}
               </p>
             </Show>
           </div>
@@ -343,11 +357,13 @@ export default function App() {
         </section>
 
         {/* Add Form */}
-        <AddSubscriptionForm
-          deviceID={deviceID()}
-          onSubscriptionCreated={handleSubscriptionCreated}
-          onLog={log}
-        />
+        <Show when={deviceID()}>
+          <AddSubscriptionForm
+            deviceID={deviceID()!}
+            onSubscriptionCreated={handleSubscriptionCreated}
+            onLog={log}
+          />
+        </Show>
 
         {/* Dev Mode Section */}
         <Show when={devMode()}>

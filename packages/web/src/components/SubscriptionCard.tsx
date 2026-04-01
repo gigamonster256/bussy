@@ -1,5 +1,5 @@
 import { createSignal, For, Show } from "solid-js"
-import type { ArrivalResponse, SubscriptionResponse } from "server/src/shared/api"
+import type { ArrivalResponse, SubscriptionResponse } from "../api/client.ts"
 
 interface SubscriptionCardProps {
   subscription: SubscriptionResponse

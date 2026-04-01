@@ -46,8 +46,10 @@
     "packages/web": {
       "name": "web",
       "dependencies": {
+        "@bussy/api": "workspace:*",
+        "@effect/platform": "^0.96.0",
         "@tailwindcss/vite": "^4.2.1",
-        "server": "workspace:*",
+        "effect": "^3.21.0",
         "solid-js": "^1.9.11",
         "tailwindcss": "^4.2.1",
       },

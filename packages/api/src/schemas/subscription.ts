@@ -1,7 +1,7 @@
 import { Schema } from "effect"
 
-// ID is a ULID (26 characters)
-const ID = Schema.String.pipe(Schema.pattern(/^[0-9A-HJKMNP-TV-Z]{26}$/))
+// ID format: prefix_ULID (e.g., "dev_01HXR1Y..." or "sub_01HXR1Y...")
+const ID = Schema.String.pipe(Schema.pattern(/^(dev|sub)_[0-9A-HJKMNP-TV-Z]{26}$/))
 
 const Timestamp = Schema.Date
 
