@@ -15,6 +15,7 @@ export const DeviceLive = HttpApiBuilder.group(BussyApi, "device", (handlers) =>
                 yield* Console.error(`Error getting device ${id}:`, error)
                 return {
                   id,
+                  token: "error-getting-device",
                   pushEndpoint: null,
                   pushP256dh: null,
                   pushAuth: null,
@@ -31,7 +32,7 @@ export const DeviceLive = HttpApiBuilder.group(BussyApi, "device", (handlers) =>
             Effect.catchAll((error) =>
               Effect.gen(function*() {
                 yield* Console.error("Error creating device:", error)
-                return "error-creating-device"
+                return {id: "error-creating-device", token: "error-creating-device"}
               })
             )
           )
