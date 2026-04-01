@@ -1,0 +1,1 @@
+ALTER TABLE `device` ADD `token` text NOT NULL;

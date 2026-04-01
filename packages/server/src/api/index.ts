@@ -1,8 +1,9 @@
 import { HttpLayerRouter, HttpApiScalar, HttpApiSwagger } from "@effect/platform"
 import { Layer } from "effect"
 import { BussyApi } from "./api"
-import { HealthLive } from "./health"
-import { DeviceLive } from "./device"
+import { HttpHealthLive } from "./health/handler"
+import { HttpDeviceLive } from "./device/handler"
+import { TokenAuthorizationLive } from "./token-auth"
 
 const DocsRoute = HttpApiScalar.layerHttpLayerRouter({
   api: BussyApi,
@@ -20,10 +21,11 @@ const HttpApiRoutes = HttpLayerRouter.addHttpApi(BussyApi, {
   openapiPath: "/docs/openapi.json"
 }).pipe(
   // Provide the api handlers layer
-  Layer.provide(HealthLive),
-  Layer.provide(DeviceLive)
+  Layer.provide(HttpHealthLive),
+  Layer.provide(HttpDeviceLive)
 )
 
 export const BussyApiLive = Layer.mergeAll(HttpApiRoutes, DocsRoute).pipe(
-  Layer.provide(HttpLayerRouter.cors())
+  Layer.provide(HttpLayerRouter.cors()),
+  Layer.provide(TokenAuthorizationLive)
 )

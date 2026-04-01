@@ -1,18 +1,10 @@
-import { HttpApi, HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "@effect/platform"
-import { Schema } from "effect"
-import { DeviceSelect, DeviceInsert } from "../device"
+import { HttpApi, HttpApiError } from "@effect/platform"
+import { HealthGroup } from "./health/api"
+import { DeviceGroup } from "./device/api"
+import { SubscriptionGroup } from "./subscription/api"
 
-const idParam = HttpApiSchema.param("id", Schema.String)
-
-export const BussyApi = HttpApi.make("BussyApi").add(
-  HttpApiGroup.make("health").add(
-    HttpApiEndpoint.get("health")`/`.addSuccess(Schema.Void)
-  ).prefix("/health"))
-  .add(
-  HttpApiGroup.make("device")
-    .add(
-      HttpApiEndpoint.get("getDevice")`/${idParam}`.addSuccess(DeviceSelect))
-    .add(
-      HttpApiEndpoint.post("createDevice")`/`.addSuccess(DeviceInsert)
-  ).prefix("/device")
-)
+export const BussyApi = HttpApi.make("BussyApi")
+  .add(HealthGroup.prefix("/health"))
+  .add(DeviceGroup.prefix("/device"))
+  .add(SubscriptionGroup.prefix("/subscription"))
+  .addError(HttpApiError.InternalServerError)

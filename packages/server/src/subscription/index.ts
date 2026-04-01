@@ -10,14 +10,16 @@ export const SubscriptionInsert = createInsertSchema(subscriptionTable)
 export const SubscriptionSelect = createSelectSchema(subscriptionTable)
 export const SubscriptionUpdate = createUpdateSchema(subscriptionTable)
 
+export const SubscriptionCreationParams = SubscriptionInsert.omit("id", "deviceID", "timeCreated", "timeUpdated")
+export const SubscriptionCreationResponse = SubscriptionSelect.pick("id")
+
 export type Subscription = Schema.Schema.Type<typeof SubscriptionSelect>
-export type SubscriptionCreationParams = Omit<Subscription, "id" | "deviceID" | "timeCreated" | "timeUpdated">
 
 export class SubscriptionService extends Effect.Service<SubscriptionService>()("SubscriptionService", {
     effect: Effect.gen(function*() {
         const db = yield* DatabaseService
         return (deviceID: Device["id"]) => ({
-            create: Effect.fn("SubscriptionService.create")(function* (params: SubscriptionCreationParams) {
+            create: Effect.fn("SubscriptionService.create")(function* (params: Schema.Schema.Type<typeof SubscriptionCreationParams>) {
                 const id = createID("subscription")
                 const _res = yield* db.insert(subscriptionTable).values({
                     id,
@@ -29,7 +31,8 @@ export class SubscriptionService extends Effect.Service<SubscriptionService>()("
             getByID: Effect.fn("SubscriptionService.getByID")(function* (id: Subscription["id"]) {
                 const res = yield* db.select()
                                     .from(subscriptionTable)
-                                    .where(and(
+                                    .where(
+                                      and(
                                         eq(subscriptionTable.id, id),
                                         eq(subscriptionTable.deviceID, deviceID)
                                     ))
@@ -44,7 +47,8 @@ export class SubscriptionService extends Effect.Service<SubscriptionService>()("
                 return res
             }),
             deleteByID: Effect.fn("SubscriptionService.deleteByID")(function* (id: Subscription["id"]) {
-                const _res = yield* db.delete(subscriptionTable).where(and(
+                const _res = yield* db.delete(subscriptionTable).where(
+                  and(
                     eq(subscriptionTable.id, id),
                     eq(subscriptionTable.deviceID, deviceID)
                 ))
