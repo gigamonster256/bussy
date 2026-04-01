@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import { bigint, char, timestamp as rawTs } from "drizzle-orm/mysql-core";
 
 export const ulid = (name: string) => char(name, { length: 26 + 4 });
@@ -24,6 +23,7 @@ export const timestamps = {
   timeCreated: timestamp("time_created").notNull().defaultNow(),
   timeUpdated: timestamp("time_updated")
     .notNull()
-    .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    .defaultNow()
+    .onUpdateNow(),
 //   timeDeleted: timestamp("time_deleted"),
 };

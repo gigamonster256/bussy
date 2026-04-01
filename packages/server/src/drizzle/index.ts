@@ -5,11 +5,7 @@ import { DrizzleConfig } from "drizzle-orm"
 
 
 export const MysqlLive = mysqlLayerConfig({
-    host: Config.string("MYSQL_HOST"),
-    port: Config.number("MYSQL_PORT"),
-    database: Config.string("MYSQL_DATABASE"),
-    username: Config.string("MYSQL_USERNAME"),
-    password: Config.redacted("MYSQL_PASSWORD"),
+    url: Config.redacted("DATABASE_URL")
 })
 
 const drizzleConfig: DrizzleConfig = {

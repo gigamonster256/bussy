@@ -1,21 +1,10 @@
-import { HttpServer } from "@effect/platform"
+import { HttpLayerRouter } from "@effect/platform"
 import { BunHttpServer } from "@effect/platform-bun"
 import { Config, Context, Effect, Layer } from "effect"
 import { DatabaseService } from "./drizzle"
-import { AggieSpiritApi } from "./services/AggieSpiritApi"
-import { MetadataCache } from "./services/MetadataCache"
-import { NameResolver } from "./services/NameResolver"
-import { WebPushService } from "./services/WebPushService"
-import { apiRouter } from "./routes"
+import { AggieSpiritApi } from "./aggie-api/AggieSpiritApi"
+import { BussyApiLive } from "./api"
 
-// Re-export route modules for testing
-export * from "./routes"
-
-/**
- * The HTTP router as an Effect.
- * Uses the composed apiRouter from route modules.
- */
-export const HttpApp = Effect.succeed(apiRouter)
 
 // ============================================================================
 // Server Layer - Binds to network and serves HttpApp
@@ -52,11 +41,10 @@ export const makeServerConfig = (port: number, host = "127.0.0.1") => Layer.succ
  */
 export const ServerLive = Effect.gen(function*() {
   const { host, port } = yield* ServerConfig
-  const router = yield* HttpApp
 
   yield* Effect.logInfo(`Starting HTTP server on ${host}:${port}`)
 
-  const serverLayer = HttpServer.serve(router)
+  const serverLayer = HttpLayerRouter.serve(BussyApiLive)
 
   const HttpLive = serverLayer.pipe(
     Layer.provide(BunHttpServer.layer({
@@ -71,4 +59,4 @@ export const ServerLive = Effect.gen(function*() {
 /**
  * Dependencies required by the HTTP router
  */
-export type HttpAppDependencies = AggieSpiritApi | MetadataCache | DatabaseService | WebPushService | NameResolver
+export type HttpAppDependencies = AggieSpiritApi  | DatabaseService 
