@@ -1,17 +1,17 @@
-import { Schema, Effect } from "effect"
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-orm/effect-schema"
+import { Effect } from "effect"
 import { eq } from "drizzle-orm"
 import { DatabaseService } from "../drizzle"
 import { deviceTable } from "./device.sql"
 import { createID } from "../util/id"
 
-export const DeviceInsert = createInsertSchema(deviceTable)
-export const DeviceSelect = createSelectSchema(deviceTable)
-export const DeviceUpdate = createUpdateSchema(deviceTable)
-
-export const DeviceCreationResponse = DeviceSelect.pick("id", "token")
-
-export type Device = Schema.Schema.Type<typeof DeviceSelect>
+// Re-export types from @bussy/api for consistency
+export type { Device, DeviceCreationResponseType } from "@bussy/api"
+export {
+  DeviceSelect as DeviceSchema,
+  DeviceInsert as DeviceInsertSchema,
+  DeviceUpdate as DeviceUpdateSchema,
+  DeviceCreationResponse
+} from "@bussy/api"
 
 export class DeviceService extends Effect.Service<DeviceService>()("DeviceService", {
     effect: Effect.gen(function* () {
@@ -20,13 +20,13 @@ export class DeviceService extends Effect.Service<DeviceService>()("DeviceServic
             create: Effect.fn("DeviceService.create")(function* () {
                 const id = createID("device")
                 const token = "test-token-" + id
-                const _res = yield* db.insert(deviceTable).values({
+                yield* db.insert(deviceTable).values({
                     id,
                     token
                 })
-                return DeviceCreationResponse.make({ id, token })
+                return { id, token }
             }),
-            getByID: Effect.fn("DeviceService.getByID")(function* (id: Device["id"]) {
+            getByID: Effect.fn("DeviceService.getByID")(function* (id: string) {
                 const res = yield* db.select()
                                     .from(deviceTable)
                                     .where(eq(deviceTable.id, id))
@@ -43,8 +43,8 @@ export class DeviceService extends Effect.Service<DeviceService>()("DeviceServic
                                     .pipe(Effect.head)
                 return res
             }),
-            deleteByID: Effect.fn("DeviceService.deleteByID")(function* (id: Device["id"]) {
-                const _res = yield* db.delete(deviceTable).where(eq(deviceTable.id, id))
+            deleteByID: Effect.fn("DeviceService.deleteByID")(function* (id: string) {
+                yield* db.delete(deviceTable).where(eq(deviceTable.id, id))
                 return
             })
         }

@@ -1,7 +1,7 @@
 import { Effect } from "effect"
 import { HttpApiBuilder, HttpApiError, } from "@effect/platform"
-import { BussyApi } from "../api"
-import { DeviceService } from "../../device"
+import { BussyApi } from "@bussy/api"
+import { DeviceService } from "../device"
 
 export const HttpDeviceLive = HttpApiBuilder.group(BussyApi, "device", (handlers) =>
   Effect.gen(function*() {

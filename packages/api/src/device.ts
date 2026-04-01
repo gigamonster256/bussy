@@ -1,5 +1,5 @@
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "@effect/platform"
-import { DeviceCreationResponse, DeviceSelect } from "../../device"
+import { DeviceCreationResponse, DeviceSelect } from "./schemas/device"
 
 const idParam = HttpApiSchema.param("id", DeviceSelect.fields.id)
 

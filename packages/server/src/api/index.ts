@@ -1,8 +1,8 @@
-import { HttpLayerRouter, HttpApiScalar, HttpApiSwagger } from "@effect/platform"
+import { HttpLayerRouter, HttpApiScalar } from "@effect/platform"
 import { Layer } from "effect"
-import { BussyApi } from "./api"
-import { HttpHealthLive } from "./health/handler"
-import { HttpDeviceLive } from "./device/handler"
+import { BussyApi } from "@bussy/api"
+import { HttpHealthLive } from "./health"
+import { HttpDeviceLive } from "./device"
 import { TokenAuthorizationLive } from "./token-auth"
 
 const DocsRoute = HttpApiScalar.layerHttpLayerRouter({

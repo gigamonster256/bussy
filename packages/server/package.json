@@ -16,6 +16,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@bussy/api": "workspace:*",
     "@effect/platform": "^0.96.0",
     "@effect/platform-bun": "^0.89.0",
     "@effect/sql": "^0.51.0",

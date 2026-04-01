@@ -11,8 +11,12 @@
   ],
   "scripts": {
     "build": "bun --filter '*' build",
+    "build:api": "bun --filter @bussy/api build",
     "build:server": "bun --filter server build",
     "build:web": "bun --filter web build",
+    "check": "bun --filter '*' check",
+    "check:api": "bun --filter @bussy/api check",
+    "check:server": "bun --filter server check",
     "dev": "bun --filter '*' --parallel dev",
     "dev:server": "bun --filter server dev",
     "dev:web": "bun --filter web dev"

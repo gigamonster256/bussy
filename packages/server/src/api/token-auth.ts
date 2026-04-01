@@ -1,25 +1,9 @@
 import {
-  HttpApiError,
-  HttpApiMiddleware,
-  HttpApiSecurity
+  HttpApiError
 } from "@effect/platform"
-import { Context, Layer, Effect, Redacted } from "effect"
-import { Device, DeviceService } from "../device"
-
-// Define a Context.Tag for the authenticated user
-export class CurrentDevice extends Context.Tag("CurrentDevice")<CurrentDevice, Device>() {}
-
-// Create the Authorization middleware
-export class TokenAuthorization extends HttpApiMiddleware.Tag<TokenAuthorization>()(
-  "TokenAuthorization",
-  {
-    failure: HttpApiError.Unauthorized,
-    provides: CurrentDevice,
-    security: {
-      tokenBearer: HttpApiSecurity.bearer
-    }
-  }
-) {}
+import { Layer, Effect, Redacted } from "effect"
+import { DeviceService } from "../device"
+import { TokenAuthorization } from "@bussy/api"
 
 export const TokenAuthorizationLive = Layer.effect(
   TokenAuthorization,

@@ -1,34 +1,40 @@
-import { Schema, Effect } from "effect"
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-orm/effect-schema"
+import { Effect } from "effect"
 import { eq, and } from "drizzle-orm"
 import { DatabaseService } from "../drizzle"
 import { subscriptionTable } from "./subscription.sql"
-import { Device } from "../device"
 import { createID } from "../util/id"
 
-export const SubscriptionInsert = createInsertSchema(subscriptionTable)
-export const SubscriptionSelect = createSelectSchema(subscriptionTable)
-export const SubscriptionUpdate = createUpdateSchema(subscriptionTable)
-
-export const SubscriptionCreationParams = SubscriptionInsert.omit("id", "deviceID", "timeCreated", "timeUpdated")
-export const SubscriptionCreationResponse = SubscriptionSelect.pick("id")
-
-export type Subscription = Schema.Schema.Type<typeof SubscriptionSelect>
+// Re-export types from @bussy/api for consistency
+export type { Subscription, SubscriptionCreationParamsType } from "@bussy/api"
+export {
+  SubscriptionSelect as SubscriptionSchema,
+  SubscriptionInsert as SubscriptionInsertSchema,
+  SubscriptionUpdate as SubscriptionUpdateSchema,
+  SubscriptionCreationParams,
+  SubscriptionCreationResponse
+} from "@bussy/api"
 
 export class SubscriptionService extends Effect.Service<SubscriptionService>()("SubscriptionService", {
     effect: Effect.gen(function*() {
         const db = yield* DatabaseService
-        return (deviceID: Device["id"]) => ({
-            create: Effect.fn("SubscriptionService.create")(function* (params: Schema.Schema.Type<typeof SubscriptionCreationParams>) {
+        return (deviceID: string) => ({
+            create: Effect.fn("SubscriptionService.create")(function* (params: {
+                routeID: string
+                directionID: string
+                stopID: string
+                notifyMinutes: number
+                timeRangeStart: string
+                timeRangeEnd: string
+            }) {
                 const id = createID("subscription")
-                const _res = yield* db.insert(subscriptionTable).values({
+                yield* db.insert(subscriptionTable).values({
                     id,
                     deviceID,
                     ...params
                 })
-                return id
+                return { id }
             }),
-            getByID: Effect.fn("SubscriptionService.getByID")(function* (id: Subscription["id"]) {
+            getByID: Effect.fn("SubscriptionService.getByID")(function* (id: string) {
                 const res = yield* db.select()
                                     .from(subscriptionTable)
                                     .where(
@@ -46,13 +52,12 @@ export class SubscriptionService extends Effect.Service<SubscriptionService>()("
                                     .where(eq(subscriptionTable.deviceID, deviceID))
                 return res
             }),
-            deleteByID: Effect.fn("SubscriptionService.deleteByID")(function* (id: Subscription["id"]) {
-                const _res = yield* db.delete(subscriptionTable).where(
+            deleteByID: Effect.fn("SubscriptionService.deleteByID")(function* (id: string) {
+                yield* db.delete(subscriptionTable).where(
                   and(
                     eq(subscriptionTable.id, id),
                     eq(subscriptionTable.deviceID, deviceID)
                 ))
-                // FIXME: return if row was actually deleted or not
                 return
             })
         })

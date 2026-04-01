@@ -1,6 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform"
 import { Schema } from "effect"
-import { TokenAuthorization } from "../token-auth"
+import { TokenAuthorization } from "./token-auth"
 
 export const HealthGroup = HttpApiGroup.make("health")
   .add(

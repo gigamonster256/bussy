@@ -1,7 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "@effect/platform"
 import { Schema } from "effect"
-import { SubscriptionCreationParams, SubscriptionCreationResponse, SubscriptionSelect } from "../../subscription"
-import { TokenAuthorization } from "../token-auth"
+import { SubscriptionCreationParams, SubscriptionCreationResponse, SubscriptionSelect } from "./schemas/subscription"
+import { TokenAuthorization } from "./token-auth"
 
 const idParam = HttpApiSchema.param("id", SubscriptionSelect.fields.id)
 

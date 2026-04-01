@@ -1,7 +1,6 @@
 import { Effect } from "effect"
 import { HttpApiBuilder } from "@effect/platform"
-import { BussyApi } from "../api"
-import { CurrentDevice } from "../token-auth"
+import { BussyApi, CurrentDevice } from "@bussy/api"
 
 export const HttpHealthLive = HttpApiBuilder.group(BussyApi, "health", (handlers) =>
   handlers
