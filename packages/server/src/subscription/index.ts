@@ -3,14 +3,13 @@ import { eq, and } from "drizzle-orm"
 import { DatabaseService } from "../drizzle"
 import { subscriptionTable } from "./subscription.sql"
 import { createID } from "../util/id"
+import type { SubscriptionUpdateParamsType } from "@bussy/schemas"
 
-// Re-export schemas and types from @bussy/schemas for consistency
-export type { Subscription, SubscriptionCreationParamsType } from "@bussy/schemas"
+export type { Subscription, SubscriptionCreationParamsType, SubscriptionUpdateParamsType } from "@bussy/schemas"
 export {
-  SubscriptionSelect as SubscriptionSchema,
-  SubscriptionInsert as SubscriptionInsertSchema,
-  SubscriptionUpdate as SubscriptionUpdateSchema,
+  SubscriptionSchema,
   SubscriptionCreationParams,
+  SubscriptionUpdateParams,
   SubscriptionCreationResponse
 } from "@bussy/schemas"
 
@@ -50,6 +49,27 @@ export class SubscriptionService extends Effect.Service<SubscriptionService>()("
                 const res = yield* db.select()
                                     .from(subscriptionTable)
                                     .where(eq(subscriptionTable.deviceID, deviceID))
+                return res
+            }),
+            update: Effect.fn("SubscriptionService.update")(function* (id: string, params: SubscriptionUpdateParamsType) {
+                const _res = yield* db.update(subscriptionTable)
+                    .set({
+                        ...params
+                    })
+                    .where(
+                      and(
+                        eq(subscriptionTable.id, id),
+                        eq(subscriptionTable.deviceID, deviceID)
+                    ))
+                const res = yield* db.select()
+                                    .from(subscriptionTable)
+                                    .where(
+                                      and(
+                                        eq(subscriptionTable.id, id),
+                                        eq(subscriptionTable.deviceID, deviceID)
+                                    ))
+                                    .limit(1)
+                                    .pipe(Effect.head)
                 return res
             }),
             deleteByID: Effect.fn("SubscriptionService.deleteByID")(function* (id: string) {

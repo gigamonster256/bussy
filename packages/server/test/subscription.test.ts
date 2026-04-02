@@ -251,6 +251,119 @@ describe("SubscriptionService", () => {
     )
   })
 
+  describe("update", () => {
+    it.effect("should update notifyMinutes", () =>
+      Effect.gen(function* () {
+        const deviceService = yield* DeviceService
+        const subscriptionService = yield* SubscriptionService
+
+        const device = yield* deviceService.create()
+        const subs = subscriptionService(device.id)
+
+        const created = yield* subs.create(validSubscriptionParams)
+        const updated = yield* subs.update(created.id, { notifyMinutes: 15 })
+
+        expect(updated.id).toBe(created.id)
+        expect(updated.notifyMinutes).toBe(15)
+        expect(updated.timeRangeStart).toBe(validSubscriptionParams.timeRangeStart)
+        expect(updated.timeRangeEnd).toBe(validSubscriptionParams.timeRangeEnd)
+
+        yield* subs.deleteByID(created.id)
+        yield* deviceService.deleteByID(device.id)
+      }).pipe(Effect.provide(TestLayer))
+    )
+
+    it.effect("should update timeRangeStart and timeRangeEnd", () =>
+      Effect.gen(function* () {
+        const deviceService = yield* DeviceService
+        const subscriptionService = yield* SubscriptionService
+
+        const device = yield* deviceService.create()
+        const subs = subscriptionService(device.id)
+
+        const created = yield* subs.create(validSubscriptionParams)
+        const updated = yield* subs.update(created.id, {
+          timeRangeStart: "09:00",
+          timeRangeEnd: "17:00"
+        })
+
+        expect(updated.id).toBe(created.id)
+        expect(updated.notifyMinutes).toBe(validSubscriptionParams.notifyMinutes)
+        expect(updated.timeRangeStart).toBe("09:00")
+        expect(updated.timeRangeEnd).toBe("17:00")
+
+        yield* subs.deleteByID(created.id)
+        yield* deviceService.deleteByID(device.id)
+      }).pipe(Effect.provide(TestLayer))
+    )
+
+    it.effect("should update all fields at once", () =>
+      Effect.gen(function* () {
+        const deviceService = yield* DeviceService
+        const subscriptionService = yield* SubscriptionService
+
+        const device = yield* deviceService.create()
+        const subs = subscriptionService(device.id)
+
+        const created = yield* subs.create(validSubscriptionParams)
+        const updated = yield* subs.update(created.id, {
+          notifyMinutes: 20,
+          timeRangeStart: "07:00",
+          timeRangeEnd: "19:00"
+        })
+
+        expect(updated.id).toBe(created.id)
+        expect(updated.notifyMinutes).toBe(20)
+        expect(updated.timeRangeStart).toBe("07:00")
+        expect(updated.timeRangeEnd).toBe("19:00")
+
+        yield* subs.deleteByID(created.id)
+        yield* deviceService.deleteByID(device.id)
+      }).pipe(Effect.provide(TestLayer))
+    )
+
+    it.effect("should fail when subscription not found", () =>
+      Effect.gen(function* () {
+        const deviceService = yield* DeviceService
+        const subscriptionService = yield* SubscriptionService
+
+        const device = yield* deviceService.create()
+        const subs = subscriptionService(device.id)
+
+        const result = yield* subs.update("sub_00000000000000000000000000", { notifyMinutes: 15 }).pipe(Effect.exit)
+
+        expect(result._tag).toBe("Failure")
+
+        yield* deviceService.deleteByID(device.id)
+      }).pipe(Effect.provide(TestLayer))
+    )
+
+    it.effect("should not update subscription belonging to different device", () =>
+      Effect.gen(function* () {
+        const deviceService = yield* DeviceService
+        const subscriptionService = yield* SubscriptionService
+
+        const device1 = yield* deviceService.create()
+        const device2 = yield* deviceService.create()
+
+        const subs1 = subscriptionService(device1.id)
+        const subs2 = subscriptionService(device2.id)
+
+        const created = yield* subs1.create(validSubscriptionParams)
+        const result = yield* subs2.update(created.id, { notifyMinutes: 15 }).pipe(Effect.exit)
+
+        expect(result._tag).toBe("Failure")
+
+        const found = yield* subs1.getByID(created.id)
+        expect(found.notifyMinutes).toBe(validSubscriptionParams.notifyMinutes)
+
+        yield* subs1.deleteByID(created.id)
+        yield* deviceService.deleteByID(device1.id)
+        yield* deviceService.deleteByID(device2.id)
+      }).pipe(Effect.provide(TestLayer))
+    )
+  })
+
   describe("cascade delete", () => {
     it.effect("should delete subscriptions when device is deleted", () =>
       Effect.gen(function* () {

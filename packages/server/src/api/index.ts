@@ -3,6 +3,7 @@ import { Layer } from "effect"
 import { BussyApi } from "@bussy/api"
 import { HttpHealthLive } from "./health"
 import { HttpDeviceLive } from "./device"
+import { HttpSubscriptionLive } from "./subscription"
 import { TokenAuthorizationLive } from "./token-auth"
 
 const DocsRoute = HttpApiScalar.layerHttpLayerRouter({
@@ -22,7 +23,8 @@ const HttpApiRoutes = HttpLayerRouter.addHttpApi(BussyApi, {
 }).pipe(
   // Provide the api handlers layer
   Layer.provide(HttpHealthLive),
-  Layer.provide(HttpDeviceLive)
+  Layer.provide(HttpDeviceLive),
+  Layer.provide(HttpSubscriptionLive)
 )
 
 export const BussyApiLive = Layer.mergeAll(HttpApiRoutes, DocsRoute).pipe(

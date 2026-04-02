@@ -35,6 +35,9 @@ export type {
 // Subscription exports
 export {
   SubscriptionSchema,
+  SubscriptionCreationParams,
+  SubscriptionUpdateParams,
+  SubscriptionCreationResponse,
   // Constants
   ROUTE_ID_MAX_LENGTH,
   DIRECTION_ID_MAX_LENGTH,
@@ -49,4 +52,6 @@ export {
 } from "./subscription"
 export type {
   Subscription,
+  SubscriptionCreationParamsType,
+  SubscriptionUpdateParamsType,
 } from "./subscription"

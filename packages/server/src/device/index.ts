@@ -4,14 +4,8 @@ import { DatabaseService } from "../drizzle"
 import { deviceTable } from "./device.sql"
 import { createID } from "../util/id"
 
-// Re-export schemas and types from @bussy/schemas for consistency
-export type { Device, DeviceCreationResponseType } from "@bussy/schemas"
-export {
-  DeviceSelect as DeviceSchema,
-  DeviceInsert as DeviceInsertSchema,
-  DeviceUpdate as DeviceUpdateSchema,
-  DeviceCreationResponse
-} from "@bussy/schemas"
+export type { Device } from "@bussy/schemas"
+export { DeviceSchema } from "@bussy/schemas"
 
 export class DeviceService extends Effect.Service<DeviceService>()("DeviceService", {
     effect: Effect.gen(function* () {

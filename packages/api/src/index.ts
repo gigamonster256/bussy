@@ -2,7 +2,7 @@ export { BussyApi } from "./api"
 
 export { HealthGroup } from "./health"
 export { DeviceGroup } from "./device"
-// export { SubscriptionGroup } from "./subscription/api"
+export { SubscriptionGroup } from "./subscription"
 
 // Schemas - re-exported from @bussy/schemas (single source of truth)
 export {
@@ -11,11 +11,14 @@ export {
 
 export {
   SubscriptionSchema,
+  SubscriptionCreationParams,
+  SubscriptionUpdateParams,
+  SubscriptionCreationResponse,
 } from "@bussy/schemas"
 
 // Types
 export type { Device } from "@bussy/schemas"
-export type { Subscription } from "@bussy/schemas"
+export type { Subscription, SubscriptionCreationParamsType, SubscriptionUpdateParamsType } from "@bussy/schemas"
 
 // Constants for validation
 export {

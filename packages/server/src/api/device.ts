@@ -19,13 +19,18 @@ export const HttpDeviceLive = HttpApiBuilder.group(BussyApi, "device", (handlers
         })
       ).handle("create", 
         Effect.fn("HttpDeviceLive.create")(function*() {
-          const device = yield* devices.create().pipe(
+          const { id } = yield* devices.create().pipe(
             Effect.tapError((error) => 
               Effect.logError("Error creating device:", error)
             ),
             Effect.mapError(() => new HttpApiError.InternalServerError())
           )
-          return device
+          return yield* devices.getByID(id).pipe(
+            Effect.tapError((error) => 
+              Effect.logError(`Error fetching created device ${id}:`, error)
+            ),
+            Effect.mapError(() => new HttpApiError.InternalServerError())
+          )
         }
       )
     )
