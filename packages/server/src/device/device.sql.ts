@@ -1,6 +1,5 @@
-import { mysqlTable, text } from "drizzle-orm/mysql-core"
+import { mysqlTable, text, index } from "drizzle-orm/mysql-core"
 import { id, timestamps } from "../drizzle/types";
-import { index } from "drizzle-orm/cockroach-core";
 
 
 export const deviceTable = mysqlTable("device", {

@@ -4,7 +4,7 @@ import {
   HttpApiSecurity
 } from "@effect/platform"
 import { Context } from "effect"
-import { Device } from "./schemas/device"
+import { Device } from "@bussy/schemas"
 
 export class CurrentDevice extends Context.Tag("CurrentDevice")<CurrentDevice, Device>() {}
 

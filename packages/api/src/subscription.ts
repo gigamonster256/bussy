@@ -1,19 +1,19 @@
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "@effect/platform"
 import { Schema } from "effect"
-import { SubscriptionCreationParams, SubscriptionCreationResponse, SubscriptionSelect } from "./schemas/subscription"
+import { SubscriptionSchema } from "@bussy/schemas"
 import { TokenAuthorization } from "./token-auth"
 
-const idParam = HttpApiSchema.param("id", SubscriptionSelect.fields.id)
+const idParam = HttpApiSchema.param("id", SubscriptionSchema.fields.id)
 
 export const SubscriptionGroup = HttpApiGroup.make("subscription")
   .add(
     HttpApiEndpoint.post("createSubscription")`/`
-      .setPayload(SubscriptionCreationParams)
-      .addSuccess(SubscriptionCreationResponse)
+      .setPayload(SubscriptionSchema)
+      .addSuccess(SubscriptionSchema)
   ).add(
     HttpApiEndpoint.get("getSubscription")`/${idParam}`
-      .addSuccess(SubscriptionSelect)
+      .addSuccess(SubscriptionSchema)
   ).add(
     HttpApiEndpoint.get("listSubscriptions")`/`
-      .addSuccess(Schema.Array(SubscriptionSelect))
+      .addSuccess(Schema.Array(SubscriptionSchema))
   ).middleware(TokenAuthorization)

@@ -1,6 +1,14 @@
 import { bigint, char, timestamp as rawTs } from "drizzle-orm/mysql-core";
+import { ULID_LENGTH } from "@bussy/schemas";
 
-export const ulid = (name: string) => char(name, { length: 26 + 4 });
+/**
+ * ID column length for Drizzle.
+ * Currently 30 = 3 char prefix + 1 underscore + 26 ULID chars.
+ * If you add prefixes longer than 3 chars, update this accordingly.
+ */
+export const ID_LENGTH = 4 + ULID_LENGTH; // prefix(3) + separator(1) + ULID(26)
+
+export const ulid = (name: string) => char(name, { length: ID_LENGTH });
 
 export const id = {
   get id() {

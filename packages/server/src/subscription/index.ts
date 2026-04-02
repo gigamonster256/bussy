@@ -4,15 +4,15 @@ import { DatabaseService } from "../drizzle"
 import { subscriptionTable } from "./subscription.sql"
 import { createID } from "../util/id"
 
-// Re-export types from @bussy/api for consistency
-export type { Subscription, SubscriptionCreationParamsType } from "@bussy/api"
+// Re-export schemas and types from @bussy/schemas for consistency
+export type { Subscription, SubscriptionCreationParamsType } from "@bussy/schemas"
 export {
   SubscriptionSelect as SubscriptionSchema,
   SubscriptionInsert as SubscriptionInsertSchema,
   SubscriptionUpdate as SubscriptionUpdateSchema,
   SubscriptionCreationParams,
   SubscriptionCreationResponse
-} from "@bussy/api"
+} from "@bussy/schemas"
 
 export class SubscriptionService extends Effect.Service<SubscriptionService>()("SubscriptionService", {
     effect: Effect.gen(function*() {
