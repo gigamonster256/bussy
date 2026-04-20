@@ -1,0 +1,11 @@
+**/*.json
+**/*.jsonc
+**/*.md
+**/*.html
+**/*.css
+**/*.webmanifest
+**/node_modules
+**/dist
+**/build
+**/.git
+**/.github

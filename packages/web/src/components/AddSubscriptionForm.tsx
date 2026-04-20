@@ -1,78 +1,78 @@
-import { createResource, createSignal, For } from "solid-js"
-import { api } from "../api/client.ts"
+import { createResource, createSignal, For } from "solid-js";
+import { api } from "../api/client.ts";
 
 interface AddSubscriptionFormProps {
-  deviceID: string
-  onSubscriptionCreated: (subscription: any) => void
-  onLog: (msg: string) => void
+  deviceID: string;
+  onSubscriptionCreated: (subscription: any) => void;
+  onLog: (msg: string) => void;
 }
 
 export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
-  const [selectedRouteId, setSelectedRouteId] = createSignal<string>("")
-  const [selectedDirectionId, setSelectedDirectionId] = createSignal<string>("")
-  const [selectedStopCode, setSelectedStopCode] = createSignal<string>("")
-  const [notifyMinutes, setNotifyMinutes] = createSignal(5)
-  const [timeRangeStart, setTimeRangeStart] = createSignal("07:00")
-  const [timeRangeEnd, setTimeRangeEnd] = createSignal("22:00")
-  const [isCreating, setIsCreating] = createSignal(false)
+  const [selectedRouteId, setSelectedRouteId] = createSignal<string>("");
+  const [selectedDirectionId, setSelectedDirectionId] = createSignal<string>("");
+  const [selectedStopCode, setSelectedStopCode] = createSignal<string>("");
+  const [notifyMinutes, setNotifyMinutes] = createSignal(5);
+  const [timeRangeStart, setTimeRangeStart] = createSignal("07:00");
+  const [timeRangeEnd, setTimeRangeEnd] = createSignal("22:00");
+  const [isCreating, setIsCreating] = createSignal(false);
 
   const [routes] = createResource(async () => {
     try {
-      return await api.getRoutes()
+      return await api.getRoutes();
     } catch (e) {
-      props.onLog(`Error loading routes: ${e}`)
-      return []
+      props.onLog(`Error loading routes: ${e}`);
+      return [];
     }
-  })
+  });
 
   const [directions] = createResource(selectedRouteId, async (routeID) => {
-    if (!routeID) return []
+    if (!routeID) return [];
     try {
-      return await api.getDirections(routeID)
+      return await api.getDirections(routeID);
     } catch (e) {
-      props.onLog(`Error loading directions: ${e}`)
-      return []
+      props.onLog(`Error loading directions: ${e}`);
+      return [];
     }
-  })
+  });
 
   const [stops] = createResource(
     () => ({ routeID: selectedRouteId(), directionID: selectedDirectionId() }),
     async ({ directionID, routeID }) => {
-      if (!routeID || !directionID) return []
+      if (!routeID || !directionID) return [];
       try {
-        return await api.getStops(routeID, directionID)
+        return await api.getStops(routeID, directionID);
       } catch (e) {
-        props.onLog(`Error loading stops: ${e}`)
-        return []
+        props.onLog(`Error loading stops: ${e}`);
+        return [];
       }
-    }
-  )
+    },
+  );
 
-  const selectedRoute = () => routes()?.find((r) => r.id === selectedRouteId())
-  const selectedDirection = () => directions()?.find((d) => d.id === selectedDirectionId())
-  const selectedStop = () => stops()?.find((s) => s.code === selectedStopCode())
+  const selectedRoute = () => routes()?.find((r) => r.id === selectedRouteId());
+  const selectedDirection = () => directions()?.find((d) => d.id === selectedDirectionId());
+  const selectedStop = () => stops()?.find((s) => s.code === selectedStopCode());
 
   function handleRouteChange(routeID: string) {
-    setSelectedRouteId(routeID)
-    setSelectedDirectionId("")
-    setSelectedStopCode("")
+    setSelectedRouteId(routeID);
+    setSelectedDirectionId("");
+    setSelectedStopCode("");
   }
 
   function handleDirectionChange(directionID: string) {
-    setSelectedDirectionId(directionID)
-    setSelectedStopCode("")
+    setSelectedDirectionId(directionID);
+    setSelectedStopCode("");
   }
 
-  const isFormValid = () => selectedRouteId() && selectedDirectionId() && selectedStopCode()
+  const isFormValid = () => selectedRouteId() && selectedDirectionId() && selectedStopCode();
 
   async function handleSubmit() {
-    const route = selectedRoute()
-    const direction = selectedDirection()
-    const stop = selectedStop()
+    const route = selectedRoute();
+    const direction = selectedDirection();
+    const stop = selectedStop();
 
-    if (!route || !direction || !stop) return
+    if (!route || !direction || !stop) return;
 
-    setIsCreating(true)
+    setIsCreating(true);
     try {
       const sub = await api.createSubscription(props.deviceID, {
         routeID: route.id,
@@ -80,24 +80,24 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
         stopID: stop.code,
         notifyMinutes: notifyMinutes(),
         timeRangeStart: timeRangeStart(),
-        timeRangeEnd: timeRangeEnd()
-      })
+        timeRangeEnd: timeRangeEnd(),
+      });
 
-      props.onSubscriptionCreated(sub)
-      props.onLog(`Created subscription for ${route.shortName} at ${stop.name}`)
+      props.onSubscriptionCreated(sub);
+      props.onLog(`Created subscription for ${route.shortName} at ${stop.name}`);
 
-      setSelectedRouteId("")
-      setSelectedDirectionId("")
-      setSelectedStopCode("")
+      setSelectedRouteId("");
+      setSelectedDirectionId("");
+      setSelectedStopCode("");
     } catch (e) {
-      props.onLog(`Error creating subscription: ${e}`)
+      props.onLog(`Error creating subscription: ${e}`);
     } finally {
-      setIsCreating(false)
+      setIsCreating(false);
     }
   }
 
   const inputClass =
-    "w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700 focus:border-maroon-700 disabled:bg-gray-100 disabled:cursor-not-allowed"
+    "w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700 focus:border-maroon-700 disabled:bg-gray-100 disabled:cursor-not-allowed";
 
   return (
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
@@ -141,12 +141,10 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
               {!selectedRouteId()
                 ? "Select a route first"
                 : directions.loading
-                ? "Loading..."
-                : "Select a direction"}
+                  ? "Loading..."
+                  : "Select a direction"}
             </option>
-            <For each={directions()}>
-              {(dir) => <option value={dir.id}>{dir.name}</option>}
-            </For>
+            <For each={directions()}>{(dir) => <option value={dir.id}>{dir.name}</option>}</For>
           </select>
         </div>
 
@@ -165,12 +163,10 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
               {!selectedDirectionId()
                 ? "Select a direction first"
                 : stops.loading
-                ? "Loading..."
-                : "Select a stop"}
+                  ? "Loading..."
+                  : "Select a stop"}
             </option>
-            <For each={stops()}>
-              {(stop) => <option value={stop.code}>{stop.name}</option>}
-            </For>
+            <For each={stops()}>{(stop) => <option value={stop.code}>{stop.name}</option>}</For>
           </select>
         </div>
 
@@ -227,5 +223,5 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
         </button>
       </div>
     </div>
-  )
+  );
 }

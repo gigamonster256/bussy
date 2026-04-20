@@ -3,21 +3,21 @@
  * Stores the user's preferred order of subscriptions in localStorage.
  */
 
-const SUBSCRIPTION_ORDER_KEY = "bussy-subscription-order"
+const SUBSCRIPTION_ORDER_KEY = "bussy-subscription-order";
 
 /**
  * Get the saved subscription order (array of subscription IDs)
  */
 export function getSubscriptionOrder(): Array<string> {
   try {
-    const stored = localStorage.getItem(SUBSCRIPTION_ORDER_KEY)
+    const stored = localStorage.getItem(SUBSCRIPTION_ORDER_KEY);
     if (stored) {
-      return JSON.parse(stored) as Array<string>
+      return JSON.parse(stored) as Array<string>;
     }
   } catch {
     // Ignore parse errors
   }
-  return []
+  return [];
 }
 
 /**
@@ -25,7 +25,7 @@ export function getSubscriptionOrder(): Array<string> {
  */
 export function setSubscriptionOrder(order: Array<string>): void {
   try {
-    localStorage.setItem(SUBSCRIPTION_ORDER_KEY, JSON.stringify(order))
+    localStorage.setItem(SUBSCRIPTION_ORDER_KEY, JSON.stringify(order));
   } catch {
     // Ignore storage errors
   }
@@ -36,14 +36,14 @@ export function setSubscriptionOrder(order: Array<string>): void {
  * Subscriptions not in the saved order will be appended at the end.
  */
 export function sortByOrder<T extends { id: string }>(subscriptions: Array<T>): Array<T> {
-  const order = getSubscriptionOrder()
-  if (order.length === 0) return subscriptions
+  const order = getSubscriptionOrder();
+  if (order.length === 0) return subscriptions;
 
-  const orderMap = new Map(order.map((id, index) => [id, index]))
+  const orderMap = new Map(order.map((id, index) => [id, index]));
 
   return [...subscriptions].sort((a, b) => {
-    const aIndex = orderMap.get(a.id) ?? Infinity
-    const bIndex = orderMap.get(b.id) ?? Infinity
-    return aIndex - bIndex
-  })
+    const aIndex = orderMap.get(a.id) ?? Infinity;
+    const bIndex = orderMap.get(b.id) ?? Infinity;
+    return aIndex - bIndex;
+  });
 }

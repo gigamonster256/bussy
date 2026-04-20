@@ -3,22 +3,22 @@
  * Toggle via footer button or set in localStorage
  */
 
-const DEV_MODE_KEY = "bussy:devMode"
+const DEV_MODE_KEY = "bussy:devMode";
 
 export function isDevMode() {
   try {
-    return localStorage.getItem(DEV_MODE_KEY) === "true"
+    return localStorage.getItem(DEV_MODE_KEY) === "true";
   } catch {
-    return false
+    return false;
   }
 }
 
 export function setDevMode(enabled: boolean) {
   try {
     if (enabled) {
-      localStorage.setItem(DEV_MODE_KEY, "true")
+      localStorage.setItem(DEV_MODE_KEY, "true");
     } else {
-      localStorage.removeItem(DEV_MODE_KEY)
+      localStorage.removeItem(DEV_MODE_KEY);
     }
   } catch {
     // localStorage not available
@@ -26,7 +26,7 @@ export function setDevMode(enabled: boolean) {
 }
 
 export function toggleDevMode() {
-  const newValue = !isDevMode()
-  setDevMode(newValue)
-  return newValue
+  const newValue = !isDevMode();
+  setDevMode(newValue);
+  return newValue;
 }

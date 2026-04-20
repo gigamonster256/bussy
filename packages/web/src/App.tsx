@@ -1,202 +1,205 @@
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js"
-import type { ArrivalResponse, SubscriptionResponse } from "./api/client.ts"
-import { api } from "./api/client.ts"
-import { AddSubscriptionForm } from "./components/AddSubscriptionForm.tsx"
-import { SubscriptionCard } from "./components/SubscriptionCard.tsx"
-import { Toggle } from "./components/Toggle.tsx"
-import { clearDeviceId, getDeviceId, saveDeviceId } from "./stores/device.ts"
-import { isDevMode, toggleDevMode } from "./stores/devMode.ts"
-import { getLiveUpdatesPreference, setLiveUpdatesPreference } from "./stores/liveUpdates.ts"
+import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import type { ArrivalResponse, SubscriptionResponse } from "./api/client.ts";
+import { api } from "./api/client.ts";
+import { AddSubscriptionForm } from "./components/AddSubscriptionForm.tsx";
+import { SubscriptionCard } from "./components/SubscriptionCard.tsx";
+import { Toggle } from "./components/Toggle.tsx";
+import { clearDeviceId, getDeviceId, saveDeviceId } from "./stores/device.ts";
+import { isDevMode, toggleDevMode } from "./stores/devMode.ts";
+import { getLiveUpdatesPreference, setLiveUpdatesPreference } from "./stores/liveUpdates.ts";
 import {
   isPushSubscribed,
   isPushSupported,
   registerServiceWorker,
   subscribeToPush,
-  unsubscribeFromPush
-} from "./stores/push.ts"
-import { setSubscriptionOrder, sortByOrder } from "./stores/subscriptionOrder.ts"
+  unsubscribeFromPush,
+} from "./stores/push.ts";
+import { setSubscriptionOrder, sortByOrder } from "./stores/subscriptionOrder.ts";
 
 export default function App() {
-  const [deviceID, setDeviceID] = createSignal<string | null>(getDeviceId())
-  const [devMode, setDevModeState] = createSignal(isDevMode())
-  const [subscriptions, setSubscriptions] = createSignal<Array<SubscriptionResponse>>([])
-  const [allArrivals, setAllArrivals] = createSignal<Record<string, Array<ArrivalResponse>>>({})
-  const [isPolling, setIsPolling] = createSignal(false)
-  const [pushSupported, setPushSupported] = createSignal(false)
-  const [pushEnabled, setPushEnabled] = createSignal(false)
-  const [pushLoading, setPushLoading] = createSignal(false)
-  const [logs, setLogs] = createSignal<Array<string>>([])
-  const [draggingId, setDraggingId] = createSignal<string | null>(null)
-  const [isOverTrash, setIsOverTrash] = createSignal(false)
-  const [resetConfirmStep, setResetConfirmStep] = createSignal(0) // 0=none, 1=first confirm, 2=resetting
-  const [resetError, setResetError] = createSignal<string | null>(null)
+  const [deviceID, setDeviceID] = createSignal<string | null>(getDeviceId());
+  const [devMode, setDevModeState] = createSignal(isDevMode());
+  const [subscriptions, setSubscriptions] = createSignal<Array<SubscriptionResponse>>([]);
+  const [allArrivals, setAllArrivals] = createSignal<Record<string, Array<ArrivalResponse>>>({});
+  const [isPolling, setIsPolling] = createSignal(false);
+  const [pushSupported, setPushSupported] = createSignal(false);
+  const [pushEnabled, setPushEnabled] = createSignal(false);
+  const [pushLoading, setPushLoading] = createSignal(false);
+  const [logs, setLogs] = createSignal<Array<string>>([]);
+  const [draggingId, setDraggingId] = createSignal<string | null>(null);
+  const [isOverTrash, setIsOverTrash] = createSignal(false);
+  const [resetConfirmStep, setResetConfirmStep] = createSignal(0); // 0=none, 1=first confirm, 2=resetting
+  const [resetError, setResetError] = createSignal<string | null>(null);
 
-  let pollInterval: ReturnType<typeof setInterval> | null = null
+  let pollInterval: ReturnType<typeof setInterval> | null = null;
 
   // Save subscription order whenever it changes
   function updateSubscriptionsAndSaveOrder(newSubs: Array<SubscriptionResponse>) {
-    setSubscriptions(newSubs)
-    setSubscriptionOrder(newSubs.map((s) => s.id))
+    setSubscriptions(newSubs);
+    setSubscriptionOrder(newSubs.map((s) => s.id));
   }
 
   function log(msg: string) {
-    setLogs((prev) => [`${new Date().toLocaleTimeString()}: ${msg}`, ...prev.slice(0, 49)])
+    setLogs((prev) => [`${new Date().toLocaleTimeString()}: ${msg}`, ...prev.slice(0, 49)]);
   }
 
   async function pollAllArrivals() {
-    if (subscriptions().length === 0 || !deviceID()) return
+    if (subscriptions().length === 0 || !deviceID()) return;
     try {
-      const response = await api.getArrivalsBatch(deviceID()!)
-      const mutableArrivals: Record<string, Array<ArrivalResponse>> = {}
+      const response = await api.getArrivalsBatch(deviceID()!);
+      const mutableArrivals: Record<string, Array<ArrivalResponse>> = {};
       for (const [key, value] of Object.entries(response.arrivals)) {
-        mutableArrivals[key] = [...value as Array<ArrivalResponse>]
+        mutableArrivals[key] = [...(value as Array<ArrivalResponse>)];
       }
-      setAllArrivals(mutableArrivals)
-      const totalArrivals = Object.values(mutableArrivals).reduce((sum, arr) => sum + arr.length, 0)
-      log(`Updated: ${totalArrivals} arrivals`)
+      setAllArrivals(mutableArrivals);
+      const totalArrivals = Object.values(mutableArrivals).reduce(
+        (sum, arr) => sum + arr.length,
+        0,
+      );
+      log(`Updated: ${totalArrivals} arrivals`);
     } catch (e) {
-      log(`Polling error: ${e}`)
+      log(`Polling error: ${e}`);
     }
   }
 
   function startPolling() {
-    if (isPolling() || subscriptions().length === 0) return
-    setIsPolling(true)
-    setLiveUpdatesPreference(true)
-    pollAllArrivals()
-    pollInterval = setInterval(pollAllArrivals, 30_000)
+    if (isPolling() || subscriptions().length === 0) return;
+    setIsPolling(true);
+    setLiveUpdatesPreference(true);
+    pollAllArrivals();
+    pollInterval = setInterval(pollAllArrivals, 30_000);
   }
 
   function stopPolling() {
     if (pollInterval) {
-      clearInterval(pollInterval)
-      pollInterval = null
+      clearInterval(pollInterval);
+      pollInterval = null;
     }
-    setIsPolling(false)
-    setLiveUpdatesPreference(false)
-    setAllArrivals({})
+    setIsPolling(false);
+    setLiveUpdatesPreference(false);
+    setAllArrivals({});
   }
 
   onMount(async () => {
     try {
       // Check if we already have a device ID, if not register with server
-      let currentDeviceID = deviceID()
+      let currentDeviceID = deviceID();
       if (!currentDeviceID) {
-        const device = await api.registerDevice()
-        setDeviceID(device.id)
-        saveDeviceId(device.id)
-        currentDeviceID = device.id
-        log(`Device registered: ${device.id}`)
+        const device = await api.registerDevice();
+        setDeviceID(device.id);
+        saveDeviceId(device.id);
+        currentDeviceID = device.id;
+        log(`Device registered: ${device.id}`);
       } else {
-        log(`Using existing device: ${currentDeviceID}`)
+        log(`Using existing device: ${currentDeviceID}`);
       }
 
-      setPushSupported(isPushSupported())
+      setPushSupported(isPushSupported());
       if (isPushSupported()) {
-        await registerServiceWorker()
-        const subscribed = await isPushSubscribed()
-        setPushEnabled(subscribed)
+        await registerServiceWorker();
+        const subscribed = await isPushSubscribed();
+        setPushEnabled(subscribed);
       }
-      const subs = await api.getSubscriptions(currentDeviceID)
+      const subs = await api.getSubscriptions(currentDeviceID);
       // Sort by saved order
-      setSubscriptions(sortByOrder(subs as Array<SubscriptionResponse>))
+      setSubscriptions(sortByOrder(subs as Array<SubscriptionResponse>));
       if (subs.length > 0 && getLiveUpdatesPreference()) {
-        startPolling()
+        startPolling();
       }
     } catch (e) {
-      log(`Error initializing: ${e}`)
+      log(`Error initializing: ${e}`);
     }
-  })
+  });
 
   onCleanup(() => {
-    if (pollInterval) clearInterval(pollInterval)
-  })
+    if (pollInterval) clearInterval(pollInterval);
+  });
 
   async function togglePush(enabled: boolean) {
-    if (pushLoading() || !deviceID()) return
-    setPushLoading(true)
+    if (pushLoading() || !deviceID()) return;
+    setPushLoading(true);
     try {
       if (!enabled) {
-        const result = await unsubscribeFromPush(deviceID()!)
-        if (result.success) setPushEnabled(false)
+        const result = await unsubscribeFromPush(deviceID()!);
+        if (result.success) setPushEnabled(false);
       } else {
-        const result = await subscribeToPush(deviceID()!)
-        if (result.success) setPushEnabled(true)
+        const result = await subscribeToPush(deviceID()!);
+        if (result.success) setPushEnabled(true);
       }
     } finally {
-      setPushLoading(false)
+      setPushLoading(false);
     }
   }
 
   async function deleteSubscription(id: string) {
     try {
-      await api.deleteSubscription(id)
-      setSubscriptions((prev) => prev.filter((s) => s.id !== id))
+      await api.deleteSubscription(id);
+      setSubscriptions((prev) => prev.filter((s) => s.id !== id));
       setAllArrivals((prev) => {
-        const next = { ...prev }
-        delete next[id]
-        return next
-      })
-      if (subscriptions().length === 0) stopPolling()
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      if (subscriptions().length === 0) stopPolling();
     } catch (e) {
-      log(`Error deleting: ${e}`)
+      log(`Error deleting: ${e}`);
     }
   }
 
   function handleSubscriptionCreated(sub: SubscriptionResponse) {
-    setSubscriptions((prev) => [...prev, sub])
+    setSubscriptions((prev) => [...prev, sub]);
     if (!isPolling()) {
-      startPolling()
+      startPolling();
     } else {
-      pollAllArrivals()
+      pollAllArrivals();
     }
   }
 
   function handleDevModeToggle() {
-    setDevModeState(toggleDevMode())
+    setDevModeState(toggleDevMode());
   }
 
   async function handleResetAccount() {
     if (resetConfirmStep() === 0) {
       // First click - show confirmation
-      setResetConfirmStep(1)
-      setResetError(null)
-      return
+      setResetConfirmStep(1);
+      setResetError(null);
+      return;
     }
 
     if (resetConfirmStep() === 1) {
       // Second click - actually reset
-      setResetConfirmStep(2)
-      setResetError(null)
+      setResetConfirmStep(2);
+      setResetError(null);
 
       try {
         // Stop polling
-        stopPolling()
+        stopPolling();
 
         // Delete device from server if we have one
         if (deviceID()) {
-          await api.deleteDevice(deviceID()!)
+          await api.deleteDevice(deviceID()!);
         }
 
         // Clear local storage and state
-        clearDeviceId()
-        setDeviceID(null)
+        clearDeviceId();
+        setDeviceID(null);
 
-        log("Account reset successfully. Reloading...")
+        log("Account reset successfully. Reloading...");
 
         // Reload the page to register a new device
-        window.location.reload()
+        window.location.reload();
       } catch (e) {
-        setResetError(`Failed to reset: ${e}`)
-        setResetConfirmStep(0)
-        log(`Reset error: ${e}`)
+        setResetError(`Failed to reset: ${e}`);
+        setResetConfirmStep(0);
+        log(`Reset error: ${e}`);
       }
     }
   }
 
   function cancelReset() {
-    setResetConfirmStep(0)
-    setResetError(null)
+    setResetConfirmStep(0);
+    setResetError(null);
   }
 
   return (
@@ -265,9 +268,7 @@ export default function App() {
           >
             <div class="relative">
               {/* Subscription list */}
-              <div
-                class={`space-y-3 transition-all duration-200 ${draggingId() ? "pr-24" : ""}`}
-              >
+              <div class={`space-y-3 transition-all duration-200 ${draggingId() ? "pr-24" : ""}`}>
                 <For each={subscriptions()}>
                   {(sub, index) => (
                     <SubscriptionCard
@@ -276,34 +277,38 @@ export default function App() {
                       isPolling={isPolling()}
                       isDragging={draggingId() === sub.id}
                       index={index()}
-                      dragIndex={draggingId() ? subscriptions().findIndex((s) => s.id === draggingId()) : null}
+                      dragIndex={
+                        draggingId()
+                          ? subscriptions().findIndex((s) => s.id === draggingId())
+                          : null
+                      }
                       onDelete={deleteSubscription}
                       onDragStart={setDraggingId}
                       onDragEnd={() => {
-                        setDraggingId(null)
-                        setIsOverTrash(false)
+                        setDraggingId(null);
+                        setIsOverTrash(false);
                       }}
                       onDrop={(targetId, position) => {
-                        const dragId = draggingId()
-                        if (!dragId || dragId === targetId) return
+                        const dragId = draggingId();
+                        if (!dragId || dragId === targetId) return;
 
-                        const prev = subscriptions()
-                        const items = [...prev]
-                        const dragIndex = items.findIndex((s) => s.id === dragId)
-                        const targetIndex = items.findIndex((s) => s.id === targetId)
-                        if (dragIndex === -1 || targetIndex === -1) return
+                        const prev = subscriptions();
+                        const items = [...prev];
+                        const dragIndex = items.findIndex((s) => s.id === dragId);
+                        const targetIndex = items.findIndex((s) => s.id === targetId);
+                        if (dragIndex === -1 || targetIndex === -1) return;
 
                         // Remove dragged item
-                        const [draggedItem] = items.splice(dragIndex, 1)
+                        const [draggedItem] = items.splice(dragIndex, 1);
                         // Calculate new position
-                        let insertIndex = targetIndex
-                        if (position === "below") insertIndex++
+                        let insertIndex = targetIndex;
+                        if (position === "below") insertIndex++;
                         // Adjust if we removed from before the target
-                        if (dragIndex < targetIndex) insertIndex--
+                        if (dragIndex < targetIndex) insertIndex--;
                         // Insert at new position
-                        items.splice(insertIndex, 0, draggedItem)
+                        items.splice(insertIndex, 0, draggedItem);
                         // Update and persist order
-                        updateSubscriptionsAndSaveOrder(items)
+                        updateSubscriptionsAndSaveOrder(items);
                       }}
                     />
                   )}
@@ -313,28 +318,26 @@ export default function App() {
               {/* Trash drop zone - absolutely positioned on the right */}
               <div
                 class={`absolute top-0 bottom-0 right-0 flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200 ${
-                  draggingId()
-                    ? "w-20 opacity-100"
-                    : "w-0 opacity-0 overflow-hidden border-0"
+                  draggingId() ? "w-20 opacity-100" : "w-0 opacity-0 overflow-hidden border-0"
                 } ${
                   isOverTrash()
                     ? "border-red-500 bg-red-50 text-red-600"
                     : "border-gray-300 bg-gray-50 text-gray-400"
                 }`}
                 onDragOver={(e) => {
-                  e.preventDefault()
-                  if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
-                  setIsOverTrash(true)
+                  e.preventDefault();
+                  if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
+                  setIsOverTrash(true);
                 }}
                 onDragLeave={() => setIsOverTrash(false)}
                 onDrop={(e) => {
-                  e.preventDefault()
-                  const id = draggingId()
+                  e.preventDefault();
+                  const id = draggingId();
                   if (id) {
-                    deleteSubscription(id)
+                    deleteSubscription(id);
                   }
-                  setDraggingId(null)
-                  setIsOverTrash(false)
+                  setDraggingId(null);
+                  setIsOverTrash(false);
                 }}
               >
                 <svg
@@ -371,9 +374,7 @@ export default function App() {
           <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
             <h2 class="text-sm font-semibold text-gray-900 mb-2">Activity Log</h2>
             <div class="bg-gray-900 rounded-lg p-2 max-h-32 overflow-y-auto font-mono text-xs">
-              <For each={logs()}>
-                {(msg) => <div class="text-green-400 py-0.5">{msg}</div>}
-              </For>
+              <For each={logs()}>{(msg) => <div class="text-green-400 py-0.5">{msg}</div>}</For>
               <Show when={logs().length === 0}>
                 <div class="text-gray-500 italic">No activity yet</div>
               </Show>
@@ -384,13 +385,12 @@ export default function App() {
           <section class="bg-white rounded-xl shadow-sm border border-red-200 p-4">
             <h2 class="text-sm font-semibold text-red-700 mb-2">Danger Zone</h2>
             <p class="text-xs text-gray-600 mb-3">
-              Reset your account to delete all subscriptions and get a new device ID. This action cannot be undone.
+              Reset your account to delete all subscriptions and get a new device ID. This action
+              cannot be undone.
             </p>
 
             <Show when={resetError()}>
-              <div class="text-xs text-red-600 mb-2 p-2 bg-red-50 rounded">
-                {resetError()}
-              </div>
+              <div class="text-xs text-red-600 mb-2 p-2 bg-red-50 rounded">{resetError()}</div>
             </Show>
 
             <Show
@@ -433,10 +433,11 @@ export default function App() {
         <div class="flex items-center justify-between text-xs text-gray-400">
           <span>Bussy</span>
           <span onClick={handleDevModeToggle} class="cursor-pointer select-none">
-            v{APP_VERSION}{devMode() ? "-dev" : ""}
+            v{APP_VERSION}
+            {devMode() ? "-dev" : ""}
           </span>
         </div>
       </footer>
     </div>
-  )
+  );
 }

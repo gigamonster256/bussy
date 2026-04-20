@@ -3,7 +3,7 @@
  * These types define the contract for all REST endpoints.
  */
 
-import type { Arrival, Direction, Route, Stop } from "./domain"
+import type { Arrival, Direction, Route, Stop } from "./domain";
 
 // ============================================================================
 // Device Management
@@ -12,13 +12,13 @@ import type { Arrival, Direction, Route, Stop } from "./domain"
 /** Request to register a new device */
 export interface RegisterDeviceRequest {
   /** Client-generated device ID (UUID) */
-  readonly deviceID: string
+  readonly deviceID: string;
 }
 
 /** Response from device registration */
 export interface RegisterDeviceResponse {
-  readonly deviceID: string
-  readonly timeCreated: string // ISO 8601
+  readonly deviceID: string;
+  readonly timeCreated: string; // ISO 8601
 }
 
 // ============================================================================
@@ -27,32 +27,32 @@ export interface RegisterDeviceResponse {
 
 /** Request to create a new subscription (deviceID comes from URL path) */
 export interface CreateSubscriptionRequest {
-  readonly routeID: string
-  readonly directionID: string
-  readonly stopID: string
-  readonly notifyMinutes: number
-  readonly timeRangeStart: string // "HH:mm" 24h format
-  readonly timeRangeEnd: string // "HH:mm" 24h format
+  readonly routeID: string;
+  readonly directionID: string;
+  readonly stopID: string;
+  readonly notifyMinutes: number;
+  readonly timeRangeStart: string; // "HH:mm" 24h format
+  readonly timeRangeEnd: string; // "HH:mm" 24h format
 }
 
 /** Stored subscription with server-generated ID */
 export interface SubscriptionResponse {
-  readonly id: string
-  readonly deviceID: string
-  readonly routeID: string
-  readonly directionID: string
-  readonly stopID: string
-  readonly notifyMinutes: number
-  readonly timeRangeStart: string
-  readonly timeRangeEnd: string
-  readonly routeName: string
-  readonly directionName: string
-  readonly stopName: string
-  readonly timeCreated: string // ISO 8601
+  readonly id: string;
+  readonly deviceID: string;
+  readonly routeID: string;
+  readonly directionID: string;
+  readonly stopID: string;
+  readonly notifyMinutes: number;
+  readonly timeRangeStart: string;
+  readonly timeRangeEnd: string;
+  readonly routeName: string;
+  readonly directionName: string;
+  readonly stopName: string;
+  readonly timeCreated: string; // ISO 8601
 }
 
 /** List of subscriptions response */
-export type SubscriptionsListResponse = ReadonlyArray<SubscriptionResponse>
+export type SubscriptionsListResponse = ReadonlyArray<SubscriptionResponse>;
 
 // ============================================================================
 // Arrivals (Polling)
@@ -61,23 +61,23 @@ export type SubscriptionsListResponse = ReadonlyArray<SubscriptionResponse>
 /** Request to get arrivals for subscriptions */
 export interface GetArrivalsRequest {
   /** Comma-separated subscription IDs */
-  readonly subscriptionIds: string
+  readonly subscriptionIds: string;
 }
 
 /** JSON-serializable arrival (DateTime converted to ISO string) */
 export interface ArrivalResponse {
-  readonly routeID: string
-  readonly directionID: string
-  readonly stopCode: string
-  readonly estimatedDepartTimeUtc: string | null // ISO 8601
-  readonly scheduledDepartTimeUtc: string | null // ISO 8601
-  readonly isRealtime: boolean
-  readonly isOffRoute: boolean
+  readonly routeID: string;
+  readonly directionID: string;
+  readonly stopCode: string;
+  readonly estimatedDepartTimeUtc: string | null; // ISO 8601
+  readonly scheduledDepartTimeUtc: string | null; // ISO 8601
+  readonly isRealtime: boolean;
+  readonly isOffRoute: boolean;
 }
 
 /** Arrivals grouped by subscription */
 export interface GetArrivalsResponse {
-  readonly arrivals: Record<string, ReadonlyArray<ArrivalResponse>>
+  readonly arrivals: Record<string, ReadonlyArray<ArrivalResponse>>;
 }
 
 // ============================================================================
@@ -86,21 +86,21 @@ export interface GetArrivalsResponse {
 
 /** Web Push subscription data (from browser PushSubscription) */
 export interface PushSubscriptionData {
-  readonly endpoint: string
+  readonly endpoint: string;
   readonly keys: {
-    readonly p256dh: string
-    readonly auth: string
-  }
+    readonly p256dh: string;
+    readonly auth: string;
+  };
 }
 
 /** Request to register push subscription (deviceID comes from URL path) */
 export interface RegisterPushRequest {
-  readonly subscription: PushSubscriptionData
+  readonly subscription: PushSubscriptionData;
 }
 
 /** VAPID public key response */
 export interface VapidKeyResponse {
-  readonly publicKey: string
+  readonly publicKey: string;
 }
 
 // ============================================================================
@@ -108,22 +108,22 @@ export interface VapidKeyResponse {
 // ============================================================================
 
 /** Routes list response - re-exports domain type for convenience */
-export type RoutesResponse = ReadonlyArray<Route>
+export type RoutesResponse = ReadonlyArray<Route>;
 
 /** Directions list response */
-export type DirectionsResponse = ReadonlyArray<Direction>
+export type DirectionsResponse = ReadonlyArray<Direction>;
 
 /** Stops list response */
-export type StopsResponse = ReadonlyArray<Stop>
+export type StopsResponse = ReadonlyArray<Stop>;
 
 // ============================================================================
 // Error Responses
 // ============================================================================
 
 export interface ApiErrorResponse {
-  readonly error: string
-  readonly message: string
-  readonly statusCode: number
+  readonly error: string;
+  readonly message: string;
+  readonly statusCode: number;
 }
 
 // ============================================================================
@@ -141,5 +141,5 @@ export const arrivalToResponse = (arrival: Arrival): ArrivalResponse => ({
     ? new Date(Number(arrival.scheduledDepartTimeUtc.epochMillis)).toISOString()
     : null,
   isRealtime: arrival.isRealtime,
-  isOffRoute: arrival.isOffRoute
-})
+  isOffRoute: arrival.isOffRoute,
+});

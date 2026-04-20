@@ -1,18 +1,18 @@
-import { createSignal, type JSX, onMount } from "solid-js"
+import { createSignal, type JSX, onMount } from "solid-js";
 
 interface ToggleProps {
-  checked: boolean
-  onChange: (checked: boolean) => void
-  disabled?: boolean
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
 }
 
 export function Toggle(props: ToggleProps): JSX.Element {
-  const [mounted, setMounted] = createSignal(false)
+  const [mounted, setMounted] = createSignal(false);
 
   onMount(() => {
     // Delay enabling transitions until after initial render
-    requestAnimationFrame(() => setMounted(true))
-  })
+    requestAnimationFrame(() => setMounted(true));
+  });
 
   return (
     <button
@@ -31,5 +31,5 @@ export function Toggle(props: ToggleProps): JSX.Element {
         } ${props.checked ? "translate-x-5" : "translate-x-0"}`}
       />
     </button>
-  )
+  );
 }

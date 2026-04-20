@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "build": "bun --filter '*' build",
+    "lint": "oxlint",
+    "fmt": "bun x oxfmt --write --ignore-path .oxfmtignore",
     "build:api": "bun --filter @bussy/api build",
     "build:server": "bun --filter server build",
     "build:web": "bun --filter web build",
@@ -21,5 +23,9 @@
     "dev:server": "bun --filter server dev",
     "dev:web": "bun --filter web dev",
     "test": "bun --filter '*' test"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0"
   }
 }

@@ -1,92 +1,92 @@
-import { createSignal, For, Show } from "solid-js"
-import type { ArrivalResponse, SubscriptionResponse } from "../api/client.ts"
+import { createSignal, For, Show } from "solid-js";
+import type { ArrivalResponse, SubscriptionResponse } from "../api/client.ts";
 
 interface SubscriptionCardProps {
-  subscription: SubscriptionResponse
-  arrivals: Array<ArrivalResponse>
-  isPolling: boolean
-  isDragging: boolean
-  index: number
-  dragIndex: number | null
-  onDelete: (id: string) => void
-  onDragStart?: (id: string) => void
-  onDragEnd?: () => void
-  onDrop?: (targetId: string, position: "above" | "below") => void
+  subscription: SubscriptionResponse;
+  arrivals: Array<ArrivalResponse>;
+  isPolling: boolean;
+  isDragging: boolean;
+  index: number;
+  dragIndex: number | null;
+  onDelete: (id: string) => void;
+  onDragStart?: (id: string) => void;
+  onDragEnd?: () => void;
+  onDrop?: (targetId: string, position: "above" | "below") => void;
 }
 
 function formatArrival(arrival: ArrivalResponse) {
-  const time = arrival.estimatedDepartTimeUtc || arrival.scheduledDepartTimeUtc
-  if (!time) return { timeStr: "Unknown", minsAway: 0, isRealtime: arrival.isRealtime }
+  const time = arrival.estimatedDepartTimeUtc || arrival.scheduledDepartTimeUtc;
+  if (!time) return { timeStr: "Unknown", minsAway: 0, isRealtime: arrival.isRealtime };
 
-  const date = new Date(time)
-  const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  const diffMs = date.getTime() - Date.now()
-  const minsAway = Math.round(diffMs / 60000)
+  const date = new Date(time);
+  const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const diffMs = date.getTime() - Date.now();
+  const minsAway = Math.round(diffMs / 60000);
 
-  return { timeStr, minsAway, isRealtime: arrival.isRealtime }
+  return { timeStr, minsAway, isRealtime: arrival.isRealtime };
 }
 
 export function SubscriptionCard(props: SubscriptionCardProps) {
-  const sub = () => props.subscription
-  const [dropPosition, setDropPosition] = createSignal<"above" | "below" | null>(null)
+  const sub = () => props.subscription;
+  const [dropPosition, setDropPosition] = createSignal<"above" | "below" | null>(null);
 
   // Check if dropping at this position would actually move the item
   const wouldMove = (position: "above" | "below"): boolean => {
-    const dragIdx = props.dragIndex
-    if (dragIdx === null) return false
+    const dragIdx = props.dragIndex;
+    if (dragIdx === null) return false;
 
-    const targetIdx = props.index
+    const targetIdx = props.index;
 
     // Dropping above: would insert at targetIdx
     // If dragging from targetIdx or targetIdx-1, no movement
     if (position === "above") {
-      return dragIdx !== targetIdx && dragIdx !== targetIdx - 1
+      return dragIdx !== targetIdx && dragIdx !== targetIdx - 1;
     }
     // Dropping below: would insert at targetIdx+1
     // If dragging from targetIdx or targetIdx+1, no movement
-    return dragIdx !== targetIdx && dragIdx !== targetIdx + 1
-  }
+    return dragIdx !== targetIdx && dragIdx !== targetIdx + 1;
+  };
 
   // Only show drop indicator if it would result in movement
   const showDropIndicator = (position: "above" | "below"): boolean => {
-    return dropPosition() === position && wouldMove(position)
-  }
+    return dropPosition() === position && wouldMove(position);
+  };
 
   const handleDragStart = (e: DragEvent) => {
     if (e.dataTransfer) {
-      e.dataTransfer.setData("text/plain", sub().id)
-      e.dataTransfer.effectAllowed = "move"
+      e.dataTransfer.setData("text/plain", sub().id);
+      e.dataTransfer.effectAllowed = "move";
     }
-    props.onDragStart?.(sub().id)
-  }
+    props.onDragStart?.(sub().id);
+  };
 
   const handleDragEnd = () => {
-    props.onDragEnd?.()
-    setDropPosition(null)
-  }
+    props.onDragEnd?.();
+    setDropPosition(null);
+  };
 
   const handleDragOver = (e: DragEvent) => {
-    e.preventDefault()
-    if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
 
     // Determine if we're in the top or bottom half
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    const midpoint = rect.top + rect.height / 2
-    setDropPosition(e.clientY < midpoint ? "above" : "below")
-  }
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+    setDropPosition(e.clientY < midpoint ? "above" : "below");
+  };
 
   const handleDragLeave = () => {
-    setDropPosition(null)
-  }
+    setDropPosition(null);
+  };
 
   const handleDrop = (e: DragEvent) => {
-    e.preventDefault()
-    const pos = dropPosition()
+    e.preventDefault();
+    const pos = dropPosition();
     if (pos && wouldMove(pos)) {
-      props.onDrop?.(sub().id, pos)
+      props.onDrop?.(sub().id, pos);
     }
-    setDropPosition(null)
-  }
+    setDropPosition(null);
+  };
 
   return (
     <div class="relative">
@@ -148,7 +148,7 @@ export function SubscriptionCard(props: SubscriptionCardProps) {
               <div class="flex flex-wrap gap-2">
                 <For each={props.arrivals.slice(0, 3)}>
                   {(arrival) => {
-                    const { isRealtime, minsAway, timeStr } = formatArrival(arrival)
+                    const { isRealtime, minsAway, timeStr } = formatArrival(arrival);
                     return (
                       <div
                         class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm ${
@@ -159,9 +159,13 @@ export function SubscriptionCard(props: SubscriptionCardProps) {
                       >
                         <span class="font-semibold">{minsAway > 0 ? `${minsAway}m` : "Now"}</span>
                         <span class="text-xs opacity-75">{timeStr}</span>
-                        {!isRealtime && <span class="text-xs bg-amber-100 text-amber-700 px-1 rounded">sched</span>}
+                        {!isRealtime && (
+                          <span class="text-xs bg-amber-100 text-amber-700 px-1 rounded">
+                            sched
+                          </span>
+                        )}
                       </div>
-                    )
+                    );
                   }}
                 </For>
               </div>
@@ -175,5 +179,5 @@ export function SubscriptionCard(props: SubscriptionCardProps) {
         <div class="absolute -bottom-1.5 left-0 right-0 h-1 bg-maroon-700 rounded-full z-10" />
       </Show>
     </div>
-  )
+  );
 }

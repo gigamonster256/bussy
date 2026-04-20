@@ -29,9 +29,6 @@ export const dollar = (name: string) =>
 
 export const timestamps = {
   timeCreated: timestamp("time_created").notNull().defaultNow(),
-  timeUpdated: timestamp("time_updated")
-    .notNull()
-    .defaultNow()
-    .onUpdateNow(),
-//   timeDeleted: timestamp("time_deleted"),
+  timeUpdated: timestamp("time_updated").notNull().defaultNow().onUpdateNow(),
+  //   timeDeleted: timestamp("time_deleted"),
 };

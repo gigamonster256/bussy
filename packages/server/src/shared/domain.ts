@@ -1,58 +1,58 @@
-import type { DateTime } from "effect"
+import type { DateTime } from "effect";
 
 export interface Route {
-  readonly id: string
-  readonly name: string
-  readonly shortName: string
-  readonly directionList: ReadonlyArray<Direction>
+  readonly id: string;
+  readonly name: string;
+  readonly shortName: string;
+  readonly directionList: ReadonlyArray<Direction>;
 }
 
 export interface Direction {
-  readonly id: string
-  readonly name: string
-  readonly destination: string
-  readonly patternList: ReadonlyArray<Pattern>
+  readonly id: string;
+  readonly name: string;
+  readonly destination: string;
+  readonly patternList: ReadonlyArray<Pattern>;
 }
 
 export interface Pattern {
-  readonly id: string
-  readonly isDisplay: boolean
+  readonly id: string;
+  readonly isDisplay: boolean;
   readonly geometry: ReadonlyArray<{
-    readonly lat: number
-    readonly lon: number
-    readonly stopCode?: string
-  }>
+    readonly lat: number;
+    readonly lon: number;
+    readonly stopCode?: string;
+  }>;
 }
 
 export interface Stop {
-  readonly code: string
-  readonly name: string
+  readonly code: string;
+  readonly name: string;
   readonly location?: {
-    readonly lat: number
-    readonly lon: number
-  }
+    readonly lat: number;
+    readonly lon: number;
+  };
 }
 
 export interface Arrival {
-  readonly routeID: string
-  readonly directionID: string
-  readonly stopCode: string
-  readonly estimatedDepartTimeUtc: DateTime.DateTime
-  readonly scheduledDepartTimeUtc: DateTime.DateTime | undefined
-  readonly isRealtime: boolean
-  readonly isOffRoute: boolean
+  readonly routeID: string;
+  readonly directionID: string;
+  readonly stopCode: string;
+  readonly estimatedDepartTimeUtc: DateTime.DateTime;
+  readonly scheduledDepartTimeUtc: DateTime.DateTime | undefined;
+  readonly isRealtime: boolean;
+  readonly isOffRoute: boolean;
 }
 
 export interface Subscription {
-  readonly routeID: string
-  readonly directionID: string
-  readonly stopID: string
-  readonly notifyMinutes: number
-  readonly timeRangeStart: string // "HH:mm" 24h
-  readonly timeRangeEnd: string // "HH:mm" 24h
+  readonly routeID: string;
+  readonly directionID: string;
+  readonly stopID: string;
+  readonly notifyMinutes: number;
+  readonly timeRangeStart: string; // "HH:mm" 24h
+  readonly timeRangeEnd: string; // "HH:mm" 24h
 }
 
 export interface AuthHeaders {
-  readonly cookie: string
-  readonly verificationToken: string
+  readonly cookie: string;
+  readonly verificationToken: string;
 }

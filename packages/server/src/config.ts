@@ -1,4 +1,4 @@
-import { ConfigProvider } from "effect"
+import { ConfigProvider } from "effect";
 
 // Default config values (non-sensitive)
 const defaults = ConfigProvider.fromJson({
@@ -16,9 +16,9 @@ const defaults = ConfigProvider.fromJson({
   POLLING_LAZY_INTERVAL: "5 minutes",
 
   // Web Push
-  VAPID_SUBJECT: "mailto:admin@example.com"
-})
+  VAPID_SUBJECT: "mailto:admin@example.com",
+});
 
 // Environment variables take precedence over defaults
 // Sensitive values (DATABASE_URL, VAPID keys) come from environment only
-export const Config = ConfigProvider.orElse(ConfigProvider.fromEnv(), () => defaults)
+export const Config = ConfigProvider.orElse(ConfigProvider.fromEnv(), () => defaults);
