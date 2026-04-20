@@ -8,6 +8,8 @@ build/
 docs/
 scratchpad/*
 !scratchpad/tsconfig.json
+packages/*/scratchpad/*
+!packages/*/scratchpad/tsconfig.json
 .direnv/
 .devenv/
 result
