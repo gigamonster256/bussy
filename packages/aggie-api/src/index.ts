@@ -1,22 +1,18 @@
 export { AggieSpiritApi } from "./aggie-spirit";
 
 export {
-  ApiBaseDataResponseSchema,
-  ApiRouteSchema,
-  ApiDirectionListItemSchema,
-  ApiPatternSchema,
-  ApiDirectionSchema,
+  BaseDataResponseSchema,
+  RouteSchema,
+  DirectionListItemSchema,
+  PatternSchema,
+  DirectionSchema,
 } from "./schemas/base-data";
 
-export {
-  ApiNextDepartureTimesResponseSchema,
-  ApiRouteDirectionTimesSchema,
-  ApiNextDepartSchema,
-} from "./schemas/next-departures";
+export { NextDepartureTimesResponseSchema, NextDepartSchema } from "./schemas/next-departures";
 
 export {
-  ApiPatternPathsResponseSchema,
-  ApiPatternPathSchema,
-  ApiPatternPointSchema,
-  ApiStopSchema,
+  PatternPathsResponseSchema,
+  PatternPathSchema,
+  PatternPointSchema,
+  StopSchema,
 } from "./schemas/pattern-paths";

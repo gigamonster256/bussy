@@ -21,4 +21,4 @@ const defaults = ConfigProvider.fromJson({
 
 // Environment variables take precedence over defaults
 // Sensitive values (DATABASE_URL, VAPID keys) come from environment only
-export const Config = ConfigProvider.orElse(ConfigProvider.fromEnv(), () => defaults);
+export const BussyConfig = ConfigProvider.orElse(ConfigProvider.fromEnv(), () => defaults);

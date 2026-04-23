@@ -1,25 +1,16 @@
 import { HttpLayerRouter } from "@effect/platform";
 import { BunHttpServer } from "@effect/platform-bun";
 import { Config, Context, Effect, Layer } from "effect";
-import { DatabaseService } from "./drizzle";
-import { AggieSpiritApi } from "./aggie-api/AggieSpiritApi";
+import { BussyConfig } from "./config";
+import { DatabaseLive } from "./drizzle";
 import { BussyApiLive } from "./api";
+import { Resources } from "./resources";
 
-// ============================================================================
-// Server Layer - Binds to network and serves HttpApp
-// ============================================================================
-
-/**
- * Service tag for the server configuration
- */
 export class ServerConfig extends Context.Tag("ServerConfig")<
   ServerConfig,
   { readonly port: number; readonly host: string }
 >() {}
 
-/**
- * Default server config from environment
- */
 export const ServerConfigLive = Layer.effect(
   ServerConfig,
   Effect.gen(function* () {
@@ -29,16 +20,9 @@ export const ServerConfigLive = Layer.effect(
   }),
 );
 
-/**
- * Creates a server config layer with specific values (useful for testing)
- */
 export const makeServerConfig = (port: number, host = "127.0.0.1") =>
   Layer.succeed(ServerConfig, { port, host });
 
-/**
- * The live server that binds to a port and serves HTTP requests.
- * Requires all service dependencies to be provided.
- */
 export const ServerLive = Effect.gen(function* () {
   const { host, port } = yield* ServerConfig;
 
@@ -58,7 +42,18 @@ export const ServerLive = Effect.gen(function* () {
   return yield* Layer.launch(HttpLive);
 });
 
-/**
- * Dependencies required by the HTTP router
- */
 export type HttpAppDependencies = AggieSpiritApi | DatabaseService;
+
+const ResourcesLive = Resources.pipe(Layer.provide(DatabaseLive));
+
+const MainLayer = Layer.mergeAll(ServerConfigLive, AggieSpiritApi.Default, ResourcesLive);
+
+const program = Effect.gen(function* () {
+  yield* Effect.logInfo("Starting Bussy Server...");
+  return yield* ServerLive;
+}).pipe(Effect.withConfigProvider(BussyConfig));
+
+Effect.runPromise(program).catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});

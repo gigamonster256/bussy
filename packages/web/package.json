@@ -4,23 +4,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "check": "tsc --noEmit",
+    "build": "vite build",
     "preview": "vite preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
     "@bussy/api": "workspace:*",
-    "@effect/platform": "^0.96.0",
+    "@effect/platform": "catalog:",
     "@tailwindcss/vite": "^4.2.1",
-    "effect": "^3.21.0",
+    "effect": "catalog:",
     "solid-js": "^1.9.11",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
-    "@types/node": "^24.12.0",
-    "oxlint": "^1.55.0",
-    "typescript": "~5.9.3",
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
     "vite": "^8.0.0",
     "vite-plugin-solid": "^2.11.10"
   }

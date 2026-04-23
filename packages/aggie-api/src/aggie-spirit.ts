@@ -21,7 +21,7 @@ export class AggieSpiritApi extends Effect.Service<AggieSpiritApi>()("AggieSpiri
       Config.withDefault(DEFAULT_API_BASE_URL),
     );
     const client = yield* HttpClient.HttpClient;
-    
+
     return {
       getBaseData: Effect.fn("aggiespirit.getBaseData")(function* () {
         const headers = yield* auth.headers();

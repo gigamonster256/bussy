@@ -4,25 +4,22 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
     }
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "check": "tsc -b tsconfig.json",
+    "check": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run"
   },
   "dependencies": {
-    "effect": "^3.21.0",
+    "effect": "catalog:",
     "ulid": "^3.0.2"
   },
   "devDependencies": {
     "@effect/vitest": "^0.29.0",
-    "typescript": "^5.6.2",
-    "vitest": "^3.0.0"
+    "typescript": "catalog:",
+    "@tsconfig/bun": "catalog:"
   }
 }

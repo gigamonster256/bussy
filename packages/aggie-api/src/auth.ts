@@ -1,4 +1,5 @@
 import { Config, Context, Data, Duration, Effect, Layer } from "effect";
+import { Buffer } from "node:buffer";
 
 // TODO: should auth be in the server package instead of the API?
 

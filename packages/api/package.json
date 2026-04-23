@@ -4,22 +4,20 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "check": "tsc -b tsconfig.json"
+    "check": "tsc --noEmit"
   },
   "dependencies": {
     "@bussy/schemas": "workspace:*",
-    "@effect/platform": "^0.96.0",
-    "effect": "^3.21.0"
+    "@effect/platform": "catalog:",
+    "effect": "catalog:"
   },
   "devDependencies": {
-    "typescript": "^5.6.2"
+    "typescript": "catalog:",
+    "@tsconfig/bun": "catalog:"
   }
 }
