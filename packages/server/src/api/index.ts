@@ -22,9 +22,7 @@ const HttpApiRoutes = HttpLayerRouter.addHttpApi(BussyApi, {
   openapiPath: "/docs/openapi.json",
 }).pipe(
   // Provide the api handlers layer
-  Layer.provide(HttpHealthLive),
-  Layer.provide(HttpDeviceLive),
-  Layer.provide(HttpSubscriptionLive),
+  Layer.provide(ResourceHandlersLive),
 );
 
 export const BussyApiLive = Layer.mergeAll(HttpApiRoutes, DocsRoute).pipe(
