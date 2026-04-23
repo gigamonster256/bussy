@@ -9,7 +9,7 @@ export default defineConfig({
   out: "./migrations",
   dialect: "mysql",
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    url: process.env.DATABASE_URL || "mysql://bussy:bussy@localhost:3306/bussy_dev",
   },
   schema: "./src/**/*.sql.ts",
 });

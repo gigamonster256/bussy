@@ -9,13 +9,16 @@
     }
   },
   "scripts": {
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test": "vitest"
   },
   "dependencies": {
     "@effect/platform": "catalog:",
     "effect": "catalog:"
   },
   "devDependencies": {
+    "@effect/vitest": "0.29.0",
+    "@tsconfig/bun": "catalog:",
     "@types/bun": "catalog:",
     "@types/node": "^25.6.0",
     "typescript": "catalog:",

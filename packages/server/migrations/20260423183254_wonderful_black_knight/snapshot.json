@@ -1,0 +1,344 @@
+{
+  "version": "6",
+  "dialect": "mysql",
+  "id": "8fd2543d-4ebc-40e3-8a6d-02d4c2c055ce",
+  "prevIds": [
+    "a6d88c7b-81e2-4755-9720-159f4076b9bb"
+  ],
+  "ddl": [
+    {
+      "name": "device",
+      "entityType": "tables"
+    },
+    {
+      "name": "subscription",
+      "entityType": "tables"
+    },
+    {
+      "type": "char(30)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "device"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "token",
+      "entityType": "columns",
+      "table": "device"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "push_endpoint",
+      "entityType": "columns",
+      "table": "device"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "push_p256dh",
+      "entityType": "columns",
+      "table": "device"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "push_auth",
+      "entityType": "columns",
+      "table": "device"
+    },
+    {
+      "type": "timestamp(3)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "time_created",
+      "entityType": "columns",
+      "table": "device"
+    },
+    {
+      "type": "timestamp(3)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "time_updated",
+      "entityType": "columns",
+      "table": "device"
+    },
+    {
+      "type": "char(30)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "char(30)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "device_id",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "varchar(64)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "route_id",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "varchar(64)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "direction_id",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "varchar(64)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "stop_id",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "tinyint",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "5",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "notify_minutes",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "varchar(5)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "'00:00'",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "time_range_start",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "varchar(5)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "'23:59'",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "time_range_end",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "timestamp(3)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "time_created",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "type": "timestamp(3)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "time_updated",
+      "entityType": "columns",
+      "table": "subscription"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "name": "PRIMARY",
+      "table": "device",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "name": "PRIMARY",
+      "table": "subscription",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        {
+          "value": "token",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "using": null,
+      "algorithm": null,
+      "lock": null,
+      "nameExplicit": true,
+      "name": "idx_device_token",
+      "entityType": "indexes",
+      "table": "device"
+    },
+    {
+      "columns": [
+        {
+          "value": "device_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "using": null,
+      "algorithm": null,
+      "lock": null,
+      "nameExplicit": true,
+      "name": "idx_subscriptions_device_id",
+      "entityType": "indexes",
+      "table": "subscription"
+    },
+    {
+      "columns": [
+        {
+          "value": "route_id",
+          "isExpression": false
+        },
+        {
+          "value": "direction_id",
+          "isExpression": false
+        },
+        {
+          "value": "stop_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "using": null,
+      "algorithm": null,
+      "lock": null,
+      "nameExplicit": true,
+      "name": "idx_subscriptions_route_stop",
+      "entityType": "indexes",
+      "table": "subscription"
+    },
+    {
+      "columns": [
+        "device_id"
+      ],
+      "tableTo": "device",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "nameExplicit": false,
+      "name": "subscription_device_id_device_id_fkey",
+      "entityType": "fks",
+      "table": "subscription"
+    }
+  ],
+  "renames": []
+}

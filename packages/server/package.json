@@ -24,7 +24,7 @@
     "@effect/sql": "catalog:",
     "@effect/sql-drizzle": "catalog:",
     "@effect/sql-mysql2": "catalog:",
-    "drizzle-orm": "^1.0.0-beta.20",
+    "drizzle-orm": "1.0.0-beta.20",
     "effect": "catalog:",
     "mysql2": "^3.20.0",
     "web-push": "^3.6.7"
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@effect/language-service": "catalog:",
     "@effect/vitest": "^0.29.0",
+    "drizzle-kit": "1.0.0-beta.20",
     "oxlint": "catalog:",
     "typescript": "catalog:",
     "vitest": "^3.0.0"
