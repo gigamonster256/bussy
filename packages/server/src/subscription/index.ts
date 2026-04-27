@@ -24,9 +24,9 @@ export class SubscriptionService extends Effect.Service<SubscriptionService>()(
       const db = yield* DatabaseService;
       return (deviceID: string) => ({
         create: Effect.fn("SubscriptionService.create")(function* (params: {
-          routeID: string;
-          directionID: string;
-          stopID: string;
+          routeName: string;
+          directionName: string;
+          stopName: string;
           notifyMinutes: number;
           timeRangeStart: string;
           timeRangeEnd: string;
@@ -35,7 +35,12 @@ export class SubscriptionService extends Effect.Service<SubscriptionService>()(
           yield* db.insert(subscriptionTable).values({
             id,
             deviceID,
-            ...params,
+            routeName: params.routeName,
+            directionName: params.directionName,
+            stopName: params.stopName,
+            notifyMinutes: params.notifyMinutes,
+            timeRangeStart: params.timeRangeStart,
+            timeRangeEnd: params.timeRangeEnd,
           });
           return { id };
         }),

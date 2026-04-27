@@ -46,16 +46,13 @@ export default function App() {
   async function pollAllArrivals() {
     if (subscriptions().length === 0 || !deviceID()) return;
     try {
-      const response = await api.getArrivalsBatch(deviceID()!);
+      const response = await api.getArrivalsBatch();
       const mutableArrivals: Record<string, Array<ArrivalResponse>> = {};
-      for (const [key, value] of Object.entries(response.arrivals)) {
-        mutableArrivals[key] = [...(value as Array<ArrivalResponse>)];
+      for (const sub of subscriptions()) {
+        mutableArrivals[sub.id] = response.slice(0, 3);
       }
       setAllArrivals(mutableArrivals);
-      const totalArrivals = Object.values(mutableArrivals).reduce(
-        (sum, arr) => sum + arr.length,
-        0,
-      );
+      const totalArrivals = response.length;
       log(`Updated: ${totalArrivals} arrivals`);
     } catch (e) {
       log(`Polling error: ${e}`);

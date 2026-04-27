@@ -27,10 +27,15 @@ export {
   SubscriptionCreationParams,
   SubscriptionUpdateParams,
   SubscriptionCreationResponse,
-  // Constants
+  // Constants - names (persisted)
+  ROUTE_NAME_MAX_LENGTH,
+  DIRECTION_NAME_MAX_LENGTH,
+  STOP_NAME_MAX_LENGTH,
+  // Constants - runtime IDs (not persisted, for validation)
   ROUTE_ID_MAX_LENGTH,
   DIRECTION_ID_MAX_LENGTH,
   STOP_ID_MAX_LENGTH,
+  // Constants - time ranges
   TIME_RANGE_PATTERN,
   TIME_RANGE_LENGTH,
   NOTIFY_MINUTES_MIN,

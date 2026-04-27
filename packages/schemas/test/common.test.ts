@@ -11,7 +11,7 @@ import {
   ULID_LENGTH,
 } from "../src/common";
 import { DeviceSchema } from "../src/device";
-import { SubscriptionSchema, ROUTE_ID_MAX_LENGTH } from "../src/subscription";
+import { SubscriptionSchema, ROUTE_NAME_MAX_LENGTH } from "../src/subscription";
 
 // Helper to get ISO date string for tests
 const nowISO = () => new Date().toISOString();
@@ -172,9 +172,9 @@ describe("SubscriptionSchema", () => {
     const subscription = Schema.decodeSync(SubscriptionSchema)({
       id: createID("subscription"),
       deviceID: createID("device"),
-      routeID: "route-123",
-      directionID: "inbound",
-      stopID: "stop-456",
+      routeName: "01 - College Main",
+      directionName: "Inbound to Campus",
+      stopName: "Main Library",
       notifyMinutes: 10,
       timeRangeStart: "08:00",
       timeRangeEnd: "18:00",
@@ -186,14 +186,14 @@ describe("SubscriptionSchema", () => {
     expect(subscription.notifyMinutes).toBe(10);
   });
 
-  it("enforces routeID max length", () => {
-    const longRouteID = "a".repeat(ROUTE_ID_MAX_LENGTH + 1);
+  it("enforces routeName max length", () => {
+    const longRouteName = "a".repeat(ROUTE_NAME_MAX_LENGTH + 1);
     const result = Schema.decodeEither(SubscriptionSchema)({
       id: createID("subscription"),
       deviceID: createID("device"),
-      routeID: longRouteID,
-      directionID: "inbound",
-      stopID: "stop-456",
+      routeName: longRouteName,
+      directionName: "Inbound to Campus",
+      stopName: "Main Library",
       notifyMinutes: 10,
       timeRangeStart: "08:00",
       timeRangeEnd: "18:00",
@@ -207,9 +207,9 @@ describe("SubscriptionSchema", () => {
     const result = Schema.decodeEither(SubscriptionSchema)({
       id: createID("subscription"),
       deviceID: createID("device"),
-      routeID: "route-123",
-      directionID: "inbound",
-      stopID: "stop-456",
+      routeName: "01 - College Main",
+      directionName: "Inbound to Campus",
+      stopName: "Main Library",
       notifyMinutes: 10,
       timeRangeStart: "8:00", // missing leading zero
       timeRangeEnd: "18:00",
@@ -223,9 +223,9 @@ describe("SubscriptionSchema", () => {
     const result = Schema.decodeEither(SubscriptionSchema)({
       id: createID("subscription"),
       deviceID: createID("device"),
-      routeID: "route-123",
-      directionID: "inbound",
-      stopID: "stop-456",
+      routeName: "01 - College Main",
+      directionName: "Inbound to Campus",
+      stopName: "Main Library",
       notifyMinutes: 100, // exceeds max of 60
       timeRangeStart: "08:00",
       timeRangeEnd: "18:00",
@@ -239,9 +239,9 @@ describe("SubscriptionSchema", () => {
     const result = Schema.decodeEither(SubscriptionSchema)({
       id: createID("subscription"),
       deviceID: createID("device"),
-      routeID: "route-123",
-      directionID: "inbound",
-      stopID: "stop-456",
+      routeName: "01 - College Main",
+      directionName: "Inbound to Campus",
+      stopName: "Main Library",
       notifyMinutes: -1, // below min of 0
       timeRangeStart: "08:00",
       timeRangeEnd: "18:00",

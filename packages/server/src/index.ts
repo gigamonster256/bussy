@@ -1,12 +1,15 @@
-import { HttpLayerRouter } from "@effect/platform";
+import { HttpLayerRouter, FetchHttpClient } from "@effect/platform";
 import { BunHttpServer } from "@effect/platform-bun";
 import { Config, Effect, Layer } from "effect";
 import { BussyConfig } from "./config";
 import { BussyApiLive } from "./api";
 import { ResourcesLive } from "./resources";
+import { AggieSpiritApi } from "@bussy/aggie-api";
 
 const serverLayer = HttpLayerRouter.serve(BussyApiLive).pipe(
-  Layer.provide(ResourcesLive)
+  Layer.provide(ResourcesLive),
+  Layer.provide(AggieSpiritApi.Default),
+  Layer.provide(FetchHttpClient.layer),
 );
 
 const program = Effect.gen(function* () {

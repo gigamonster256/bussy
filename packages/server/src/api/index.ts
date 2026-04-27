@@ -4,6 +4,8 @@ import { BussyApi } from "@bussy/api";
 import { HttpHealthLive } from "./health";
 import { HttpDeviceLive } from "./device";
 import { HttpSubscriptionLive } from "./subscription";
+import { HttpMetaLive } from "./meta";
+import { HttpArrivalLive } from "./arrival";
 import { TokenAuthorizationLive } from "./token-auth";
 
 const DocsRoute = HttpApiScalar.layerHttpLayerRouter({
@@ -16,7 +18,13 @@ const DocsRoute = HttpApiScalar.layerHttpLayerRouter({
 //   path: "/docs"
 // })
 
-const ResourceHandlersLive = Layer.mergeAll(HttpHealthLive, HttpDeviceLive, HttpSubscriptionLive);
+const ResourceHandlersLive = Layer.mergeAll(
+  HttpHealthLive,
+  HttpDeviceLive,
+  HttpSubscriptionLive,
+  HttpMetaLive,
+  HttpArrivalLive,
+);
 
 const HttpApiRoutes = HttpLayerRouter.addHttpApi(BussyApi, {
   openapiPath: "/docs/openapi.json",

@@ -33,6 +33,17 @@ export const HttpDeviceLive = HttpApiBuilder.group(BussyApi, "device", (handlers
             Effect.mapError(() => new HttpApiError.InternalServerError()),
           );
         }),
+      )
+      .handle(
+        "delete",
+        Effect.fn("HttpDeviceLive.delete")(function* ({ path: { id } }) {
+          yield* devices.deleteByID(id).pipe(
+            Effect.tapError((error) =>
+              Effect.logError(`Error deleting device with id ${id}:`, error),
+            ),
+            Effect.mapError(() => new HttpApiError.NotFound()),
+          );
+        }),
       );
   }),
 );

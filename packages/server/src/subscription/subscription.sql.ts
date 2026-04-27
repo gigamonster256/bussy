@@ -2,9 +2,9 @@ import { index, mysqlTable, tinyint, varchar } from "drizzle-orm/mysql-core";
 import { id, timestamps, ulid } from "../drizzle/types";
 import { deviceTable } from "../device/device.sql";
 import {
-  ROUTE_ID_MAX_LENGTH,
-  DIRECTION_ID_MAX_LENGTH,
-  STOP_ID_MAX_LENGTH,
+  ROUTE_NAME_MAX_LENGTH,
+  DIRECTION_NAME_MAX_LENGTH,
+  STOP_NAME_MAX_LENGTH,
   TIME_RANGE_LENGTH,
   NOTIFY_MINUTES_DEFAULT,
   TIME_RANGE_START_DEFAULT,
@@ -20,9 +20,9 @@ export const subscriptionTable = mysqlTable(
         onDelete: "cascade",
       })
       .notNull(),
-    routeID: varchar("route_id", { length: ROUTE_ID_MAX_LENGTH }).notNull(),
-    directionID: varchar("direction_id", { length: DIRECTION_ID_MAX_LENGTH }).notNull(),
-    stopID: varchar("stop_id", { length: STOP_ID_MAX_LENGTH }).notNull(),
+    routeName: varchar("route_name", { length: ROUTE_NAME_MAX_LENGTH }).notNull(),
+    directionName: varchar("direction_name", { length: DIRECTION_NAME_MAX_LENGTH }).notNull(),
+    stopName: varchar("stop_name", { length: STOP_NAME_MAX_LENGTH }).notNull(),
     notifyMinutes: tinyint("notify_minutes").notNull().default(NOTIFY_MINUTES_DEFAULT),
     timeRangeStart: varchar("time_range_start", { length: TIME_RANGE_LENGTH })
       .notNull()
@@ -32,8 +32,5 @@ export const subscriptionTable = mysqlTable(
       .default(TIME_RANGE_END_DEFAULT),
     ...timestamps,
   },
-  (table) => [
-    index("idx_subscriptions_device_id").on(table.deviceID),
-    index("idx_subscriptions_route_stop").on(table.routeID, table.directionID, table.stopID),
-  ],
+  (table) => [index("idx_subscriptions_device_id").on(table.deviceID)],
 );

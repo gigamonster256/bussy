@@ -5,4 +5,5 @@ const idParam = HttpApiSchema.param("id", DeviceSchema.fields.id);
 
 export const DeviceGroup = HttpApiGroup.make("device")
   .add(HttpApiEndpoint.post("create")`/`.addSuccess(DeviceSchema))
-  .add(HttpApiEndpoint.get("get")`/${idParam}`.addSuccess(DeviceSchema));
+  .add(HttpApiEndpoint.get("get")`/${idParam}`.addSuccess(DeviceSchema))
+  .add(HttpApiEndpoint.del("delete")`/${idParam}`);

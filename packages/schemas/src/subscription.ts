@@ -1,6 +1,10 @@
 import { Schema } from "effect";
 import { timestampedResource, resourceIDSchema } from "./common";
 
+export const ROUTE_NAME_MAX_LENGTH = 128;
+export const DIRECTION_NAME_MAX_LENGTH = 128;
+export const STOP_NAME_MAX_LENGTH = 128;
+
 export const ROUTE_ID_MAX_LENGTH = 64;
 export const DIRECTION_ID_MAX_LENGTH = 64;
 export const STOP_ID_MAX_LENGTH = 64;
@@ -16,20 +20,17 @@ export const TIME_RANGE_START_DEFAULT = "00:00";
 
 export const TIME_RANGE_END_DEFAULT = "23:59";
 
-const routeIDSchema = Schema.String.pipe(Schema.maxLength(ROUTE_ID_MAX_LENGTH));
-const directionIDSchema = Schema.String.pipe(Schema.maxLength(DIRECTION_ID_MAX_LENGTH));
-const stopIDSchema = Schema.String.pipe(Schema.maxLength(STOP_ID_MAX_LENGTH));
-const notifyMinutesSchema = Schema.Number.pipe(
-  Schema.int(),
-  Schema.between(NOTIFY_MINUTES_MIN, NOTIFY_MINUTES_MAX),
-);
+const routeNameSchema = Schema.String.pipe(Schema.maxLength(ROUTE_NAME_MAX_LENGTH));
+const directionNameSchema = Schema.String.pipe(Schema.maxLength(DIRECTION_NAME_MAX_LENGTH));
+const stopNameSchema = Schema.String.pipe(Schema.maxLength(STOP_NAME_MAX_LENGTH));
+const notifyMinutesSchema = Schema.Int.pipe(Schema.between(NOTIFY_MINUTES_MIN, NOTIFY_MINUTES_MAX));
 const timeRangeSchema = Schema.String.pipe(Schema.pattern(TIME_RANGE_PATTERN));
 
 export const SubscriptionSchema = timestampedResource("subscription", {
   deviceID: resourceIDSchema("device"),
-  routeID: routeIDSchema,
-  directionID: directionIDSchema,
-  stopID: stopIDSchema,
+  routeName: routeNameSchema,
+  directionName: directionNameSchema,
+  stopName: stopNameSchema,
   notifyMinutes: notifyMinutesSchema,
   timeRangeStart: timeRangeSchema,
   timeRangeEnd: timeRangeSchema,
@@ -40,9 +41,9 @@ export const SubscriptionSchema = timestampedResource("subscription", {
 export type Subscription = Schema.Schema.Type<typeof SubscriptionSchema>;
 
 export const SubscriptionCreationParams = Schema.Struct({
-  routeID: routeIDSchema,
-  directionID: directionIDSchema,
-  stopID: stopIDSchema,
+  routeName: routeNameSchema,
+  directionName: directionNameSchema,
+  stopName: stopNameSchema,
   notifyMinutes: notifyMinutesSchema,
   timeRangeStart: timeRangeSchema,
   timeRangeEnd: timeRangeSchema,

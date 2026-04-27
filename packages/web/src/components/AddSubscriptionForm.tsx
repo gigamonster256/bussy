@@ -75,9 +75,9 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
     setIsCreating(true);
     try {
       const sub = await api.createSubscription(props.deviceID, {
-        routeID: route.id,
-        directionID: direction.id,
-        stopID: stop.code,
+        routeName: route.shortName,
+        directionName: direction.name,
+        stopName: stop.name,
         notifyMinutes: notifyMinutes(),
         timeRangeStart: timeRangeStart(),
         timeRangeEnd: timeRangeEnd(),

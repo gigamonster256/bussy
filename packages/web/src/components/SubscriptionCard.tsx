@@ -15,15 +15,15 @@ interface SubscriptionCardProps {
 }
 
 function formatArrival(arrival: ArrivalResponse) {
-  const time = arrival.estimatedDepartTimeUtc || arrival.scheduledDepartTimeUtc;
-  if (!time) return { timeStr: "Unknown", minsAway: 0, isRealtime: arrival.isRealtime };
+  const time = arrival.estimatedDepartureTimeUtc || arrival.scheduledDepartureTimeUtc;
+  if (!time) return { timeStr: "Unknown", minsAway: 0, isRealtime: arrival.isRealTime };
 
   const date = new Date(time);
   const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const diffMs = date.getTime() - Date.now();
   const minsAway = Math.round(diffMs / 60000);
 
-  return { timeStr, minsAway, isRealtime: arrival.isRealtime };
+  return { timeStr, minsAway, isRealtime: arrival.isRealTime };
 }
 
 export function SubscriptionCard(props: SubscriptionCardProps) {
