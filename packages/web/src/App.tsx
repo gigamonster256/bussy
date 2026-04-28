@@ -4,20 +4,20 @@ import { api } from "./api/client.ts";
 import { AddSubscriptionForm } from "./components/AddSubscriptionForm.tsx";
 import { SubscriptionCard } from "./components/SubscriptionCard.tsx";
 import { Toggle } from "./components/Toggle.tsx";
-import { clearDeviceId, getDeviceId, saveDeviceId } from "./stores/device.ts";
-import { isDevMode, toggleDevMode } from "./stores/devMode.ts";
-import { getLiveUpdatesPreference, setLiveUpdatesPreference } from "./stores/liveUpdates.ts";
+// import { clearDeviceId, getDeviceId, saveDeviceId } from "./store/device.ts";
+import { isDevMode, toggleDevMode } from "./store/devMode.ts";
+import { getLiveUpdatesPreference, setLiveUpdatesPreference } from "./store/liveUpdates.ts";
 import {
   isPushSubscribed,
   isPushSupported,
   registerServiceWorker,
   subscribeToPush,
   unsubscribeFromPush,
-} from "./stores/push.ts";
-import { setSubscriptionOrder, sortByOrder } from "./stores/subscriptionOrder.ts";
+} from "./store/push.ts";
+import { setSubscriptionOrder, sortByOrder } from "./store/subscriptionOrder.ts";
 
 export default function App() {
-  const [deviceID, setDeviceID] = createSignal<string | null>(getDeviceId());
+  // const [deviceID, setDeviceID] = createSignal<string | null>(getDeviceId());
   const [devMode, setDevModeState] = createSignal(isDevMode());
   const [subscriptions, setSubscriptions] = createSignal<Array<SubscriptionResponse>>([]);
   const [allArrivals, setAllArrivals] = createSignal<Record<string, Array<ArrivalResponse>>>({});
@@ -44,7 +44,7 @@ export default function App() {
   }
 
   async function pollAllArrivals() {
-    if (subscriptions().length === 0 || !deviceID()) return;
+    if (subscriptions().length === 0) return;
     try {
       const response = await api.getArrivalsBatch();
       const mutableArrivals: Record<string, Array<ArrivalResponse>> = {};
@@ -80,16 +80,16 @@ export default function App() {
   onMount(async () => {
     try {
       // Check if we already have a device ID, if not register with server
-      let currentDeviceID = deviceID();
-      if (!currentDeviceID) {
-        const device = await api.registerDevice();
-        setDeviceID(device.id);
-        saveDeviceId(device.id);
-        currentDeviceID = device.id;
-        log(`Device registered: ${device.id}`);
-      } else {
-        log(`Using existing device: ${currentDeviceID}`);
-      }
+      // let currentDeviceID = deviceID();
+      // if (!currentDeviceID) {
+      //   const device = await api.registerDevice();
+      //   setDeviceID(device.id);
+      //   saveDeviceId(device.id);
+      //   currentDeviceID = device.id;
+      //   log(`Device registered: ${device.id}`);
+      // } else {
+      //   log(`Using existing device: ${currentDeviceID}`);
+      // }
 
       setPushSupported(isPushSupported());
       if (isPushSupported()) {
@@ -97,7 +97,7 @@ export default function App() {
         const subscribed = await isPushSubscribed();
         setPushEnabled(subscribed);
       }
-      const subs = await api.getSubscriptions(currentDeviceID);
+      const subs = await api.getSubscriptions();
       // Sort by saved order
       setSubscriptions(sortByOrder(subs as Array<SubscriptionResponse>));
       if (subs.length > 0 && getLiveUpdatesPreference()) {
@@ -113,14 +113,14 @@ export default function App() {
   });
 
   async function togglePush(enabled: boolean) {
-    if (pushLoading() || !deviceID()) return;
+    if (pushLoading()) return;
     setPushLoading(true);
     try {
       if (!enabled) {
-        const result = await unsubscribeFromPush(deviceID()!);
+        const result = await unsubscribeFromPush("FIXME");
         if (result.success) setPushEnabled(false);
       } else {
-        const result = await subscribeToPush(deviceID()!);
+        const result = await subscribeToPush("FIXME");
         if (result.success) setPushEnabled(true);
       }
     } finally {
@@ -173,14 +173,14 @@ export default function App() {
         // Stop polling
         stopPolling();
 
-        // Delete device from server if we have one
-        if (deviceID()) {
-          await api.deleteDevice(deviceID()!);
-        }
+        // // Delete device from server if we have one
+        // if (deviceID()) {
+        //   await api.deleteDevice(deviceID()!);
+        // }
 
         // Clear local storage and state
-        clearDeviceId();
-        setDeviceID(null);
+        // clearDeviceId();
+        // setDeviceID(null);
 
         log("Account reset successfully. Reloading...");
 
@@ -206,11 +206,11 @@ export default function App() {
         <div class="py-4 px-4 shadow-lg">
           <div class="max-w-lg mx-auto">
             <h1 class="text-xl font-bold text-center">Bussy</h1>
-            <Show when={devMode()}>
+            {/* <Show when={devMode()}>
               <p class="text-center text-maroon-200 text-xs mt-0.5">
                 Device: {deviceID() ?? "Registering..."}
               </p>
-            </Show>
+            </Show> */}
           </div>
         </div>
       </header>
@@ -356,14 +356,12 @@ export default function App() {
           </Show>
         </section>
 
-        {/* Add Form */}
-        <Show when={deviceID()}>
+        
           <AddSubscriptionForm
-            deviceID={deviceID()!}
+            deviceID={"FIXME"}
             onSubscriptionCreated={handleSubscriptionCreated}
             onLog={log}
           />
-        </Show>
 
         {/* Dev Mode Section */}
         <Show when={devMode()}>

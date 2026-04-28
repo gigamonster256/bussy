@@ -7,4 +7,7 @@ export default defineConfig({
   define: {
     APP_VERSION: JSON.stringify(process.env.APP_VERSION || "unknown"),
   },
+  resolve: {
+    alias: [{ find: "@", replacement: "/src" }],
+  },
 });
