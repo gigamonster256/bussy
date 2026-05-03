@@ -358,7 +358,6 @@ export default function App() {
 
         
           <AddSubscriptionForm
-            deviceID={"FIXME"}
             onSubscriptionCreated={handleSubscriptionCreated}
             onLog={log}
           />

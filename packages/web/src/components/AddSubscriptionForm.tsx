@@ -2,7 +2,6 @@ import { createResource, createSignal, For } from "solid-js";
 import { api } from "../api/client.ts";
 
 interface AddSubscriptionFormProps {
-  deviceID: string;
   onSubscriptionCreated: (subscription: any) => void;
   onLog: (msg: string) => void;
 }
@@ -74,7 +73,7 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
 
     setIsCreating(true);
     try {
-      const sub = await api.createSubscription(props.deviceID, {
+      const sub = await api.createSubscription({
         routeName: route.shortName,
         directionName: direction.name,
         stopName: stop.name,
