@@ -3,14 +3,14 @@ import webpush from "web-push";
 import { DeviceService } from "../device";
 import { SubscriptionService } from "../subscription";
 import { AggieSpiritApi } from "@bussy/aggie-api";
-import { fetchArrivalsForSubscriptions } from "../api/arrival";
+import { fetchDeparturesForSubscriptions } from "../api/departure";
 
 class PushGoneError extends Data.TaggedError("PushGone") {}
 class PushError extends Data.TaggedError("PushError")<{ error: unknown }> {}
 class DeviceExpired extends Data.TaggedError("DeviceExpired")<{ deviceId: string }> {}
 
 
-export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalNotifier", {
+export class DepartureNotifier extends Effect.Service<DepartureNotifier>()("DepartureNotifier", {
   effect: Effect.gen(function* () {
     const vapidPublicKey = yield* Config.string("VAPID_PUBLIC_KEY");
     const vapidPrivateKey = yield* Config.string("VAPID_PRIVATE_KEY");
@@ -30,7 +30,7 @@ export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalN
       return currentHHMM >= start && currentHHMM <= end;
     };
 
-    const sendPush = Effect.fn("ArrivalNotifier.sendPush")(function* (
+    const sendPush = Effect.fn("DepartureNotifier.sendPush")(function* (
       endpoint: string,
       p256dh: string,
       auth: string,
@@ -49,8 +49,8 @@ export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalN
       });
     });
 
-    const poll = Effect.fn("ArrivalNotifier.poll")(function* () {
-      yield* Effect.logDebug("Polling for arrivals to notify...");
+    const poll = Effect.fn("DepartureNotifier.poll")(function* () {
+      yield* Effect.logDebug("Polling for departures to notify...");
 
       const allDevices = yield* devices.getAllWithPushSubscriptions();
       if (allDevices.length === 0) return;
@@ -68,7 +68,7 @@ export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalN
         );
         if (eligibleSubs.length === 0) continue;
 
-        const arrivalsBySub = yield* fetchArrivalsForSubscriptions(
+        const departuresBySub = yield* fetchDeparturesForSubscriptions(
           eligibleSubs.map((s) => ({
             id: s.id,
             routeName: s.routeName,
@@ -80,10 +80,10 @@ export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalN
 
         yield* Effect.gen(function* () {
           for (const sub of eligibleSubs) {
-            const arrivals = arrivalsBySub[sub.id];
-            if (!arrivals || arrivals.length === 0) continue;
+            const departures = departuresBySub[sub.id];
+            if (!departures || departures.length === 0) continue;
 
-            const nearest = arrivals.reduce((a, b) =>
+            const nearest = departures.reduce((a, b) =>
               Math.abs(a.minutes) < Math.abs(b.minutes) ? a : b,
             );
 
@@ -129,16 +129,16 @@ export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalN
       }
     });
 
-    const start = Effect.fn("ArrivalNotifier.start")(function* () {
+    const start = Effect.fn("DepartureNotifier.start")(function* () {
       const interval = yield* Config.duration("POLLING_SOON_INTERVAL").pipe(
         Config.withDefault(Duration.seconds(30)),
       );
 
-      yield* Effect.logInfo(`Starting arrival notification polling every ${interval}...`);
+      yield* Effect.logInfo(`Starting departure notification polling every ${interval}...`);
 
       return yield* poll().pipe(
         Effect.catchAll((error) =>
-          Effect.logError("Arrival notification poll failed", error),
+          Effect.logError("Departure notification poll failed", error),
         ),
         Effect.repeat(Schedule.spaced(interval)),
         Effect.forkDaemon,

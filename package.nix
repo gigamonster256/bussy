@@ -115,7 +115,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   '';
 
   meta = {
-    description = "Texas A&M bus arrival notification service";
+    description = "Texas A&M bus departure notification service";
     homepage = "https://github.com/gigamonster256/bussy";
     license = lib.licenses.mit;
     platforms = lib.platforms.unix;

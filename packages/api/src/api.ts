@@ -3,7 +3,7 @@ import { HealthGroup } from "./health";
 import { DeviceGroup } from "./device";
 import { SubscriptionGroup } from "./subscription";
 import { MetaGroup } from "./meta";
-import { ArrivalGroup } from "./arrival";
+import { DepartureGroup } from "./departure";
 
 export const BussyApi = HttpApi.make("BussyApi")
   // V1 endpoints
@@ -11,6 +11,6 @@ export const BussyApi = HttpApi.make("BussyApi")
   .add(DeviceGroup.prefix("/v1/device"))
   .add(SubscriptionGroup.prefix("/v1/subscription"))
   .add(MetaGroup.prefix("/v1/meta"))
-  .add(ArrivalGroup.prefix("/v1/arrival"))
+  .add(DepartureGroup.prefix("/v1/departure"))
   .addError(HttpApiError.InternalServerError)
   .prefix("/api");

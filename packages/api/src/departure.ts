@@ -6,7 +6,7 @@ const routeIdParam = HttpApiSchema.param("routeId", Schema.String);
 const directionIdParam = HttpApiSchema.param("directionId", Schema.String);
 const stopCodeParam = HttpApiSchema.param("stopCode", Schema.String);
 
-export const ArrivalSchema = Schema.Struct({
+export const DepartureSchema = Schema.Struct({
   minutes: Schema.Number,
   delayed: Schema.Boolean,
   departureTime: Schema.String,
@@ -15,9 +15,9 @@ export const ArrivalSchema = Schema.Struct({
   isRealTime: Schema.Boolean,
 });
 
-export const ArrivalGroup = HttpApiGroup.make("arrival")
+export const DepartureGroup = HttpApiGroup.make("departure")
   .add(
-    HttpApiEndpoint.get("getArrival")`/:routeId/:directionId/:stopCode`
+    HttpApiEndpoint.get("getDeparture")`/:routeId/:directionId/:stopCode`
       .setPath(
         Schema.Struct({
           routeId: routeIdParam,
@@ -25,11 +25,11 @@ export const ArrivalGroup = HttpApiGroup.make("arrival")
           stopCode: stopCodeParam,
         }),
       )
-      .addSuccess(Schema.Array(ArrivalSchema)),
+      .addSuccess(Schema.Array(DepartureSchema)),
   )
   .add(
-    HttpApiEndpoint.get("listArrivalBatch")`/batch`.addSuccess(
-      Schema.Record({ key: Schema.String, value: Schema.Array(ArrivalSchema) }),
+    HttpApiEndpoint.get("listDepartureBatch")`/batch`.addSuccess(
+      Schema.Record({ key: Schema.String, value: Schema.Array(DepartureSchema) }),
     ),
   )
   .middleware(TokenAuthorization);

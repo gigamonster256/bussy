@@ -1,7 +1,7 @@
 {
   "name": "Bussy",
   "short_name": "Bussy",
-  "description": "Bus arrival notifications",
+  "description": "Bus departure notifications",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#500000",

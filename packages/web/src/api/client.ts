@@ -10,7 +10,7 @@ const BASE_URL = "http://localhost:3000";
 
 export type SubscriptionResponse = Awaited<ReturnType<typeof api.getSubscriptions>>[number];
 
-export type ArrivalResponse = Awaited<ReturnType<typeof api.getArrivalsBatch>>[string][number];
+export type DepartureResponse = Awaited<ReturnType<typeof api.getDeparturesBatch>>[string][number];
 
 const unauthenticatedClient = HttpApiClient.make(BussyApi, {
   baseUrl: BASE_URL,
@@ -82,7 +82,7 @@ export const api = {
         .pipe(Effect.as({ success: true as const })),
     ),
 
-  getArrivalsBatch: () => run((c) => c.arrival.listArrivalBatch({})),
+  getDeparturesBatch: () => run((c) => c.departure.listDepartureBatch({})),
 
   health: () => run((c) => c.health.health({})),
 

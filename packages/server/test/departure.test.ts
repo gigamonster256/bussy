@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@effect/vitest";
 import { Effect } from "effect";
-import { mapDeparture, fetchArrivalsForSubscriptions } from "../src/api/arrival";
+import { mapDeparture, fetchDeparturesForSubscriptions } from "../src/api/departure";
 
 describe("mapDeparture", () => {
   it("should return isRealTime true when estimatedDepartureTimeUtc is non-null", () => {
@@ -102,7 +102,7 @@ describe("mapDeparture", () => {
   });
 });
 
-describe("fetchArrivalsForSubscriptions", () => {
+describe("fetchDeparturesForSubscriptions", () => {
   const mockBaseData = {
     routes: [
       {
@@ -218,7 +218,7 @@ describe("fetchArrivalsForSubscriptions", () => {
     ],
   };
 
-  it.effect("should return arrivals grouped by subscription id", () =>
+  it.effect("should return departures grouped by subscription id", () =>
     Effect.gen(function* () {
       const mockApi = {
         getBaseData: () => Effect.succeed(mockBaseData as any),
@@ -235,7 +235,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         },
       ];
 
-      const result = yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
 
       expect(Object.keys(result)).toEqual(["sub_abc"]);
       expect(result.sub_abc).toHaveLength(2);
@@ -264,7 +264,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         },
       ];
 
-      const result = yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
       expect(Object.keys(result)).toEqual(["sub_abc"]);
     }),
   );
@@ -286,7 +286,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         },
       ];
 
-      const result = yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
       expect(Object.keys(result)).toEqual(["sub_by_destination"]);
     }),
   );
@@ -299,7 +299,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         getNextDepartureTimes: () => Effect.succeed(mockDepartures as any),
       };
 
-      const result = yield* fetchArrivalsForSubscriptions([], mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions([], mockApi as any);
       expect(result).toEqual({});
     }),
   );
@@ -321,7 +321,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         },
       ];
 
-      const result = yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
       expect(result).toEqual({});
     }),
   );
@@ -343,7 +343,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         },
       ];
 
-      const result = yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
       expect(result).toEqual({});
     }),
   );
@@ -365,7 +365,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         },
       ];
 
-      const result = yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
       expect(result).toEqual({});
     }),
   );
@@ -386,7 +386,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         { id: "sub_1", routeName: "15", directionName: "Outbound", stopName: "Kyle Field" },
       ];
 
-      yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
 
       expect(calledWith).toEqual(["route_15_key"]);
     }),
@@ -425,7 +425,7 @@ describe("fetchArrivalsForSubscriptions", () => {
         { id: "sub_2", routeName: "12", directionName: "Outbound", stopName: "Student Center" },
       ];
 
-      const result = yield* fetchArrivalsForSubscriptions(subs, mockApi as any);
+      const result = yield* fetchDeparturesForSubscriptions(subs, mockApi as any);
 
       expect(Object.keys(result).sort()).toEqual(["sub_1", "sub_2"]);
       expect(result.sub_1).toHaveLength(2);

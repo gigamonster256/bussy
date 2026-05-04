@@ -1,9 +1,9 @@
 import { createSignal, For, Show } from "solid-js";
-import type { ArrivalResponse, SubscriptionResponse } from "../api/client.ts";
+import type { DepartureResponse, SubscriptionResponse } from "../api/client.ts";
 
 interface SubscriptionCardProps {
   subscription: SubscriptionResponse;
-  arrivals: ReadonlyArray<ArrivalResponse>;
+  departures: ReadonlyArray<DepartureResponse>;
   isPolling: boolean;
   isDragging: boolean;
   index: number;
@@ -14,16 +14,16 @@ interface SubscriptionCardProps {
   onDrop?: (targetId: string, position: "above" | "below") => void;
 }
 
-function formatArrival(arrival: ArrivalResponse) {
-  const time = arrival.estimatedDepartureTimeUtc || arrival.scheduledDepartureTimeUtc;
-  if (!time) return { timeStr: "Unknown", minsAway: 0, isRealtime: arrival.isRealTime };
+function formatDeparture(departure: DepartureResponse) {
+  const time = departure.estimatedDepartureTimeUtc || departure.scheduledDepartureTimeUtc;
+  if (!time) return { timeStr: "Unknown", minsAway: 0, isRealtime: departure.isRealTime };
 
   const date = new Date(time);
   const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const diffMs = date.getTime() - Date.now();
   const minsAway = Math.round(diffMs / 60000);
 
-  return { timeStr, minsAway, isRealtime: arrival.isRealTime };
+  return { timeStr, minsAway, isRealtime: departure.isRealTime };
 }
 
 export function SubscriptionCard(props: SubscriptionCardProps) {
@@ -142,13 +142,13 @@ export function SubscriptionCard(props: SubscriptionCardProps) {
         <Show when={props.isPolling}>
           <div class="mt-3 pt-3 border-t border-gray-100">
             <Show
-              when={props.arrivals.length > 0}
-              fallback={<p class="text-sm text-gray-400 italic">No upcoming arrivals</p>}
+              when={props.departures.length > 0}
+              fallback={<p class="text-sm text-gray-400 italic">No upcoming departures</p>}
             >
               <div class="flex flex-wrap gap-2">
-                <For each={props.arrivals.slice(0, 3)}>
-                  {(arrival) => {
-                    const { isRealtime, minsAway, timeStr } = formatArrival(arrival);
+                <For each={props.departures.slice(0, 3)}>
+                  {(departure) => {
+                    const { isRealtime, minsAway, timeStr } = formatDeparture(departure);
                     return (
                       <div
                         class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm ${

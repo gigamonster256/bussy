@@ -2,7 +2,7 @@
 
 ## Overview
 
-Texas A&M bus arrival notification service. Bun monorepo with Effect-TS, MySQL, and SolidJS.
+Texas A&M bus departure notification service. Bun monorepo with Effect-TS, MySQL, and SolidJS.
 
 ## Commands
 

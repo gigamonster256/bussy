@@ -1,5 +1,5 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import type { ArrivalResponse, SubscriptionResponse } from "./api/client.ts";
+import type { DepartureResponse, SubscriptionResponse } from "./api/client.ts";
 import { api } from "./api/client.ts";
 import { AddSubscriptionForm } from "./components/AddSubscriptionForm.tsx";
 import { SubscriptionCard } from "./components/SubscriptionCard.tsx";
@@ -18,8 +18,8 @@ import { setSubscriptionOrder, sortByOrder } from "./store/subscriptionOrder.ts"
 export default function App() {
   const [devMode, setDevModeState] = createSignal(isDevMode());
   const [subscriptions, setSubscriptions] = createSignal<Array<SubscriptionResponse>>([]);
-  const [allArrivals, setAllArrivals] = createSignal<
-    Record<string, ReadonlyArray<ArrivalResponse>>
+  const [allDepartures, setAllDepartures] = createSignal<
+    Record<string, ReadonlyArray<DepartureResponse>>
   >({});
   const [isPolling, setIsPolling] = createSignal(false);
   const [pushSupported, setPushSupported] = createSignal(false);
@@ -43,13 +43,13 @@ export default function App() {
     setLogs((prev) => [`${new Date().toLocaleTimeString()}: ${msg}`, ...prev.slice(0, 49)]);
   }
 
-  async function pollAllArrivals() {
+  async function pollAllDepartures() {
     if (subscriptions().length === 0) return;
     try {
-      const response = await api.getArrivalsBatch();
-      setAllArrivals(response);
-      const totalArrivals = Object.values(response).flat().length;
-      log(`Updated: ${totalArrivals} arrivals`);
+      const response = await api.getDeparturesBatch();
+      setAllDepartures(response);
+      const totalDepartures = Object.values(response).flat().length;
+      log(`Updated: ${totalDepartures} departures`);
     } catch (e) {
       log(`Polling error: ${e}`);
     }
@@ -59,8 +59,8 @@ export default function App() {
     if (isPolling() || subscriptions().length === 0) return;
     setIsPolling(true);
     setLiveUpdatesPreference(true);
-    pollAllArrivals();
-    pollInterval = setInterval(pollAllArrivals, 30_000);
+    pollAllDepartures();
+    pollInterval = setInterval(pollAllDepartures, 30_000);
   }
 
   function stopPolling() {
@@ -70,7 +70,7 @@ export default function App() {
     }
     setIsPolling(false);
     setLiveUpdatesPreference(false);
-    setAllArrivals({});
+    setAllDepartures({});
   }
 
   onMount(async () => {
@@ -119,7 +119,7 @@ export default function App() {
     try {
       await api.deleteSubscription(id);
       setSubscriptions((prev) => prev.filter((s) => s.id !== id));
-      setAllArrivals((prev) => {
+      setAllDepartures((prev) => {
         const next = { ...prev };
         delete next[id];
         return next;
@@ -132,11 +132,11 @@ export default function App() {
 
   function handleSubscriptionCreated(sub: SubscriptionResponse) {
     setSubscriptions((prev) => [...prev, sub]);
-    if (!isPolling()) {
-      startPolling();
-    } else {
-      pollAllArrivals();
-    }
+      if (!isPolling()) {
+        startPolling();
+      } else {
+        pollAllDepartures();
+      }
   }
 
   function handleDevModeToggle() {
@@ -258,7 +258,7 @@ export default function App() {
                   {(sub, index) => (
                     <SubscriptionCard
                       subscription={sub}
-                      arrivals={allArrivals()[sub.id] || []}
+                      departures={allDepartures()[sub.id] || []}
                       isPolling={isPolling()}
                       isDragging={draggingId() === sub.id}
                       index={index()}

@@ -4,7 +4,7 @@ export { HealthGroup } from "./health";
 export { DeviceGroup, PushSubscriptionData, PushSubscriptionResponse } from "./device";
 export { SubscriptionGroup } from "./subscription";
 export { MetaGroup, MetaRouteSchema, MetaDirectionSchema, MetaStopSchema } from "./meta";
-export { ArrivalGroup, ArrivalSchema } from "./arrival";
+export { DepartureGroup, DepartureSchema } from "./departure";
 export { VapidPublicKeySchema } from "./health";
 
 // Schemas - re-exported from @bussy/schemas (single source of truth)

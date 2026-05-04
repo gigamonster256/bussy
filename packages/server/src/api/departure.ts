@@ -25,7 +25,7 @@ export function mapDeparture(departure: {
   };
 }
 
-export function fetchArrivalsForSubscriptions(
+export function fetchDeparturesForSubscriptions(
   subs: ReadonlyArray<{ id: string; routeName: string; directionName: string; stopName: string }>,
   aggieApi: {
     getBaseData: () => Effect.Effect<{ routes: ReadonlyArray<any> }>;
@@ -38,7 +38,7 @@ export function fetchArrivalsForSubscriptions(
 ): Effect.Effect<Record<string, Array<ReturnType<typeof mapDeparture>>>> {
   return Effect.gen(function* () {
     const baseData = yield* aggieApi.getBaseData();
-    const arrivalsBySub: Record<string, Array<ReturnType<typeof mapDeparture>>> = {};
+    const departuresBySub: Record<string, Array<ReturnType<typeof mapDeparture>>> = {};
 
     for (const sub of subs) {
       const route = baseData.routes.find(
@@ -79,24 +79,24 @@ export function fetchArrivalsForSubscriptions(
 
       for (const rdt of response.routeDirectionTimes) {
         const departures = rdt.nextDeparts.map(mapDeparture);
-        arrivalsBySub[sub.id] = departures;
+        departuresBySub[sub.id] = departures;
         break;
       }
     }
 
-    return arrivalsBySub;
+    return departuresBySub;
   });
 }
 
-export const HttpArrivalLive = HttpApiBuilder.group(BussyApi, "arrival", (handlers) =>
+export const HttpDepartureLive = HttpApiBuilder.group(BussyApi, "departure", (handlers) =>
   Effect.gen(function* () {
     const aggieApi = yield* AggieSpiritApi;
     const subscriptionService = yield* SubscriptionService;
 
     return handlers
       .handle(
-        "getArrival",
-        Effect.fn("HttpArrivalLive.getArrival")(function* ({ path }) {
+        "getDeparture",
+        Effect.fn("HttpDepartureLive.getDeparture")(function* ({ path }) {
           const { routeId, directionId, stopCode } = path as any;
 
           const response = yield* aggieApi
@@ -116,8 +116,8 @@ export const HttpArrivalLive = HttpApiBuilder.group(BussyApi, "arrival", (handle
         }),
       )
       .handle(
-        "listArrivalBatch",
-        Effect.fn("HttpArrivalLive.listArrivalBatch")(function* () {
+        "listDepartureBatch",
+        Effect.fn("HttpDepartureLive.listDepartureBatch")(function* () {
           const device = yield* CurrentDevice;
 
           const subs = subscriptionService(device.id);
@@ -125,9 +125,9 @@ export const HttpArrivalLive = HttpApiBuilder.group(BussyApi, "arrival", (handle
             .getAll()
             .pipe(Effect.mapError(() => new HttpApiError.InternalServerError()));
 
-          const arrivalsBySub = yield* fetchArrivalsForSubscriptions(allSubscriptions, aggieApi);
+          const departuresBySub = yield* fetchDeparturesForSubscriptions(allSubscriptions, aggieApi);
 
-          return arrivalsBySub;
+          return departuresBySub;
         }),
       );
   }),

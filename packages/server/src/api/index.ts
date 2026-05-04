@@ -5,7 +5,7 @@ import { HttpHealthLive } from "./health";
 import { HttpDeviceLive } from "./device";
 import { HttpSubscriptionLive } from "./subscription";
 import { HttpMetaLive } from "./meta";
-import { HttpArrivalLive } from "./arrival";
+import { HttpDepartureLive } from "./departure";
 import { TokenAuthorizationLive } from "./token-auth";
 
 const DocsRoute = HttpApiScalar.layerHttpLayerRouter({
@@ -23,7 +23,7 @@ const ResourceHandlersLive = Layer.mergeAll(
   HttpDeviceLive,
   HttpSubscriptionLive,
   HttpMetaLive,
-  HttpArrivalLive,
+  HttpDepartureLive,
 );
 
 const HttpApiRoutes = HttpLayerRouter.addHttpApi(BussyApi, {

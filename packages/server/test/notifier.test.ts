@@ -2,7 +2,7 @@ import { describe, expect, it } from "@effect/vitest";
 import { ConfigProvider, Effect, Layer } from "effect";
 import { DeviceService } from "../src/device";
 import { SubscriptionService } from "../src/subscription";
-import { ArrivalNotifier } from "../src/notifier";
+import { DepartureNotifier } from "../src/notifier";
 import { AggieSpiritApi } from "@bussy/aggie-api";
 import { TestDatabaseLive } from "./fixtures";
 
@@ -79,7 +79,7 @@ const BaseLayer = Layer.mergeAll(DeviceService.Default, SubscriptionService.Defa
 );
 
 const NotifierTestLayer = Layer.provideMerge(
-  ArrivalNotifier.Default,
+  DepartureNotifier.Default,
   Layer.mergeAll(DeviceService.Default, SubscriptionService.Default),
 ).pipe(
   Layer.provide(TestDatabaseLive),
@@ -87,7 +87,7 @@ const NotifierTestLayer = Layer.provideMerge(
   Layer.provide(Layer.setConfigProvider(VapidConfigProvider)),
 );
 
-describe("ArrivalNotifier", () => {
+describe("DepartureNotifier", () => {
   describe("getAllWithPushSubscriptions", () => {
     it.effect("should return devices with push subscriptions", () =>
       Effect.gen(function* () {
@@ -176,7 +176,7 @@ describe("ArrivalNotifier", () => {
           timeRangeEnd: "23:59",
         });
 
-        const notifier = yield* ArrivalNotifier;
+        const notifier = yield* DepartureNotifier;
         yield* notifier.poll();
 
         yield* deviceService.deleteByID(device.id);
