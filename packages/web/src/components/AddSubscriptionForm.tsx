@@ -1,4 +1,4 @@
-import { createResource, createSignal, For } from "solid-js";
+import { createEffect, createResource, createSignal, For } from "solid-js";
 import { api } from "../api/client.ts";
 
 interface AddSubscriptionFormProps {
@@ -50,6 +50,13 @@ export function AddSubscriptionForm(props: AddSubscriptionFormProps) {
   const selectedRoute = () => routes()?.find((r) => r.id === selectedRouteId());
   const selectedDirection = () => directions()?.find((d) => d.id === selectedDirectionId());
   const selectedStop = () => stops()?.find((s) => s.code === selectedStopCode());
+
+  createEffect(() => {
+    const dirs = directions();
+    if (dirs && dirs.length === 1 && !selectedDirectionId()) {
+      setSelectedDirectionId(dirs[0].id);
+    }
+  });
 
   function handleRouteChange(routeID: string) {
     setSelectedRouteId(routeID);

@@ -44,6 +44,33 @@ export const HttpDeviceLive = HttpApiBuilder.group(BussyApi, "device", (handlers
             Effect.mapError(() => new HttpApiError.NotFound()),
           );
         }),
+      )
+      .handle(
+        "registerPushSubscription",
+        Effect.fn("HttpDeviceLive.registerPushSubscription")(function* ({
+          path: { id },
+          payload,
+        }) {
+          yield* devices.setPushSubscription(id, payload.endpoint, payload.keys.p256dh, payload.keys.auth).pipe(
+            Effect.tapError((error) =>
+              Effect.logError(`Error registering push subscription for device ${id}:`, error),
+            ),
+            Effect.mapError(() => new HttpApiError.InternalServerError()),
+          );
+          return { success: true };
+        }),
+      )
+      .handle(
+        "unregisterPushSubscription",
+        Effect.fn("HttpDeviceLive.unregisterPushSubscription")(function* ({ path: { id } }) {
+          yield* devices.removePushSubscription(id).pipe(
+            Effect.tapError((error) =>
+              Effect.logError(`Error unregistering push subscription for device ${id}:`, error),
+            ),
+            Effect.mapError(() => new HttpApiError.InternalServerError()),
+          );
+          return { success: true };
+        }),
       );
   }),
 );

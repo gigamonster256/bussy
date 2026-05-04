@@ -1,10 +1,11 @@
 export { BussyApi } from "./api";
 
 export { HealthGroup } from "./health";
-export { DeviceGroup } from "./device";
+export { DeviceGroup, PushSubscriptionData, PushSubscriptionResponse } from "./device";
 export { SubscriptionGroup } from "./subscription";
 export { MetaGroup, MetaRouteSchema, MetaDirectionSchema, MetaStopSchema } from "./meta";
 export { ArrivalGroup, ArrivalSchema } from "./arrival";
+export { VapidPublicKeySchema } from "./health";
 
 // Schemas - re-exported from @bussy/schemas (single source of truth)
 export { DeviceSchema } from "@bussy/schemas";

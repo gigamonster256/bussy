@@ -1,5 +1,5 @@
 import { FetchHttpClient, HttpApiClient } from "@effect/platform";
-import { Effect, Layer, Option } from "effect";
+import { Effect, Layer } from "effect";
 import { BussyApi } from "@bussy/api";
 import type { SubscriptionCreationParamsType } from "@bussy/api";
 import { saveDevice, clearDevice, deviceToken } from "@/store/device";
@@ -10,7 +10,7 @@ const BASE_URL = "http://localhost:3000";
 
 export type SubscriptionResponse = Awaited<ReturnType<typeof api.getSubscriptions>>[number];
 
-export type ArrivalResponse = Awaited<ReturnType<typeof api.getArrivalsBatch>>[number];
+export type ArrivalResponse = Awaited<ReturnType<typeof api.getArrivalsBatch>>[string][number];
 
 const unauthenticatedClient = HttpApiClient.make(BussyApi, {
   baseUrl: BASE_URL,
@@ -86,28 +86,15 @@ export const api = {
 
   health: () => run((c) => c.health.health({})),
 
-  // ─── Stubs ─────────────────────────────────────────────────────
+  // ─── Push Notifications ────────────────────────────────────────
 
-  getArrivals: async (_routeId: string, _directionId: string, _stopCode: string) => [] as const,
+  getVapidPublicKey: () => run((c) => c.health.getVapidPublicKey({})),
 
-  getVapidPublicKey: async () => ({
-    publicKey:
-      "BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U",
-  }),
-
-  registerPushSubscription: async (
+  registerPushSubscription: (
     deviceId: string,
-    _subscription: {
-      endpoint: string;
-      keys: { p256dh: string; auth: string };
-    },
-  ) => {
-    console.log("[STUB] Registered push subscription for device:", deviceId);
-    return { success: true as const };
-  },
+    subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
+  ) => run((c) => c.device.registerPushSubscription({ path: { id: deviceId }, payload: subscription })),
 
-  unregisterPushSubscription: async (deviceId: string) => {
-    console.log("[STUB] Unregistered push subscription for device:", deviceId);
-    return { success: true as const };
-  },
+  unregisterPushSubscription: (deviceId: string) =>
+    run((c) => c.device.unregisterPushSubscription({ path: { id: deviceId } })),
 };

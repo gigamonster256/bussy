@@ -9,9 +9,9 @@ const TestLayer = Layer.mergeAll(DeviceService.Default, SubscriptionService.Defa
 );
 
 const validSubscriptionParams = {
-  routeID: "route-123",
-  directionID: "inbound",
-  stopID: "stop-456",
+  routeName: "15",
+  directionName: "Outbound",
+  stopName: "Kyle Field",
   notifyMinutes: 10,
   timeRangeStart: "08:00",
   timeRangeEnd: "18:00",
@@ -46,8 +46,8 @@ describe("SubscriptionService", () => {
 
         const results = yield* Effect.all([
           subs.create(validSubscriptionParams),
-          subs.create({ ...validSubscriptionParams, routeID: "route-456" }),
-          subs.create({ ...validSubscriptionParams, stopID: "stop-789" }),
+          subs.create({ ...validSubscriptionParams, routeName: "12" }),
+          subs.create({ ...validSubscriptionParams, stopName: "Student Center" }),
         ]);
 
         const ids = new Set(results.map((r) => r.id));
@@ -73,8 +73,8 @@ describe("SubscriptionService", () => {
 
         expect(found.id).toBe(created.id);
         expect(found.deviceID).toBe(device.id);
-        expect(found.routeID).toBe(validSubscriptionParams.routeID);
-        expect(found.stopID).toBe(validSubscriptionParams.stopID);
+        expect(found.routeName).toBe(validSubscriptionParams.routeName);
+        expect(found.stopName).toBe(validSubscriptionParams.stopName);
 
         yield* subs.deleteByID(created.id);
         yield* deviceService.deleteByID(device.id);
@@ -134,7 +134,7 @@ describe("SubscriptionService", () => {
         const subs = subscriptionService(device.id);
 
         const sub1 = yield* subs.create(validSubscriptionParams);
-        const sub2 = yield* subs.create({ ...validSubscriptionParams, routeID: "route-456" });
+        const sub2 = yield* subs.create({ ...validSubscriptionParams, routeName: "12" });
 
         const all = yield* subs.getAll();
 
@@ -175,7 +175,7 @@ describe("SubscriptionService", () => {
         const subs2 = subscriptionService(device2.id);
 
         const sub1 = yield* subs1.create(validSubscriptionParams);
-        const sub2 = yield* subs2.create({ ...validSubscriptionParams, routeID: "route-456" });
+        const sub2 = yield* subs2.create({ ...validSubscriptionParams, routeName: "12" });
 
         const device1Subs = yield* subs1.getAll();
         const device2Subs = yield* subs2.getAll();
@@ -375,7 +375,7 @@ describe("SubscriptionService", () => {
         const subs = subscriptionService(device.id);
 
         yield* subs.create(validSubscriptionParams);
-        yield* subs.create({ ...validSubscriptionParams, routeID: "route-456" });
+        yield* subs.create({ ...validSubscriptionParams, routeName: "12" });
 
         yield* deviceService.deleteByID(device.id);
 

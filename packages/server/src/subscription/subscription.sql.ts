@@ -1,5 +1,5 @@
 import { index, mysqlTable, tinyint, varchar } from "drizzle-orm/mysql-core";
-import { id, timestamps, ulid } from "../drizzle/types";
+import { id, timestamp, timestamps, ulid } from "../drizzle/types";
 import { deviceTable } from "../device/device.sql";
 import {
   ROUTE_NAME_MAX_LENGTH,
@@ -30,6 +30,8 @@ export const subscriptionTable = mysqlTable(
     timeRangeEnd: varchar("time_range_end", { length: TIME_RANGE_LENGTH })
       .notNull()
       .default(TIME_RANGE_END_DEFAULT),
+    lastNotifiedDepartureTime: timestamp("last_notified_departure_time"),
+    lastNotifiedAt: timestamp("last_notified_at"),
     ...timestamps,
   },
   (table) => [index("idx_subscriptions_device_id").on(table.deviceID)],

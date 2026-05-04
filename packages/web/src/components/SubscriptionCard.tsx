@@ -3,7 +3,7 @@ import type { ArrivalResponse, SubscriptionResponse } from "../api/client.ts";
 
 interface SubscriptionCardProps {
   subscription: SubscriptionResponse;
-  arrivals: Array<ArrivalResponse>;
+  arrivals: ReadonlyArray<ArrivalResponse>;
   isPolling: boolean;
   isDragging: boolean;
   index: number;

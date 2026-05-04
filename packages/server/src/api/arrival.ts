@@ -4,9 +4,15 @@ import { BussyApi, CurrentDevice } from "@bussy/api";
 import { AggieSpiritApi } from "@bussy/aggie-api";
 import { SubscriptionService } from "../subscription";
 
-function mapDeparture(departure: any) {
-  const estTime = departure.estimatedDepartureTimeUtc;
-  const schedTime = departure.scheduledDepartureTimeUtc;
+export function mapDeparture(departure: {
+  estimatedDepartureTimeUtc?: string | null;
+  estimatedDepartTimeUtc?: string | null;
+  scheduledDepartureTimeUtc?: string | null;
+  scheduledDepartTimeUtc?: string | null;
+  isOffRoute: boolean;
+}) {
+  const estTime = departure.estimatedDepartureTimeUtc ?? departure.estimatedDepartTimeUtc ?? null;
+  const schedTime = departure.scheduledDepartureTimeUtc ?? departure.scheduledDepartTimeUtc ?? null;
   const diffMs =
     estTime && schedTime ? new Date(estTime).getTime() - new Date(schedTime).getTime() : 0;
   return {
@@ -15,13 +21,82 @@ function mapDeparture(departure: any) {
     departureTime: estTime ?? "",
     estimatedDepartureTimeUtc: estTime ?? "",
     scheduledDepartureTimeUtc: schedTime ?? "",
-    isRealTime: departure.isOffRoute === false,
+    isRealTime: estTime !== null,
   };
 }
 
+export function fetchArrivalsForSubscriptions(
+  subs: ReadonlyArray<{ id: string; routeName: string; directionName: string; stopName: string }>,
+  aggieApi: {
+    getBaseData: () => Effect.Effect<{ routes: ReadonlyArray<any> }>;
+    getPatternPaths: (routeKeys: ReadonlyArray<any>) => Effect.Effect<ReadonlyArray<any>>;
+    getNextDepartureTimes: (
+      rdks: ReadonlyArray<any>,
+      stopCode: any,
+    ) => Effect.Effect<{ routeDirectionTimes: ReadonlyArray<any> }>;
+  },
+): Effect.Effect<Record<string, Array<ReturnType<typeof mapDeparture>>>> {
+  return Effect.gen(function* () {
+    const baseData = yield* aggieApi.getBaseData();
+    const arrivalsBySub: Record<string, Array<ReturnType<typeof mapDeparture>>> = {};
+
+    for (const sub of subs) {
+      const route = baseData.routes.find(
+        (r) =>
+          r.shortName.toLowerCase() === sub.routeName.toLowerCase() ||
+          r.name.toLowerCase() === sub.routeName.toLowerCase(),
+      );
+      if (!route) continue;
+
+      const direction = route.directionList.find(
+        (d) =>
+          d.direction.name.toLowerCase() === sub.directionName.toLowerCase() ||
+          d.destination.toLowerCase() === sub.directionName.toLowerCase(),
+      );
+      if (!direction) continue;
+
+      const patternPaths = yield* aggieApi.getPatternPaths([route.key]);
+
+      let stopCode = "";
+      for (const pp of patternPaths) {
+        for (const pattern of pp.patternPaths) {
+          if (pattern.directionKey !== direction.direction.key) continue;
+          for (const point of pattern.patternPoints) {
+            if (point.stop && point.stop.name.toLowerCase() === sub.stopName.toLowerCase()) {
+              stopCode = point.stop.stopCode;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!stopCode) continue;
+
+      const response = yield* aggieApi.getNextDepartureTimes(
+        [{ routeKey: route.key, directionKey: direction.direction.key }],
+        stopCode,
+      );
+
+      for (const rdt of response.routeDirectionTimes) {
+        const departures = rdt.nextDeparts.map(mapDeparture);
+        arrivalsBySub[sub.id] = departures;
+        break;
+      }
+    }
+
+    return arrivalsBySub;
+  });
+}
+
+type AggieApi = {
+  getBaseData: () => Effect.Effect<any>;
+  getPatternPaths: (routeKeys: ReadonlyArray<any>) => Effect.Effect<any>;
+  getNextDepartureTimes: (rdks: ReadonlyArray<any>, stopCode: any) => Effect.Effect<any>;
+};
+
 export const HttpArrivalLive = HttpApiBuilder.group(BussyApi, "arrival", (handlers) =>
   Effect.gen(function* () {
-    const aggieApi = yield* AggieSpiritApi;
+    const aggieApi: AggieApi = yield* AggieSpiritApi;
     const subscriptionService = yield* SubscriptionService;
 
     return handlers
@@ -56,59 +131,9 @@ export const HttpArrivalLive = HttpApiBuilder.group(BussyApi, "arrival", (handle
             .getAll()
             .pipe(Effect.mapError(() => new HttpApiError.InternalServerError()));
 
-          const baseData = yield* aggieApi
-            .getBaseData()
-            .pipe(Effect.mapError(() => new HttpApiError.InternalServerError()));
-          const allArrival = [];
+          const arrivalsBySub = yield* fetchArrivalsForSubscriptions(allSubscriptions, aggieApi);
 
-          for (const sub of allSubscriptions) {
-            const route = baseData.routes.find(
-              (r) =>
-                r.shortName.toLowerCase() === sub.routeName.toLowerCase() ||
-                r.name.toLowerCase() === sub.routeName.toLowerCase(),
-            );
-            if (!route) continue;
-
-            const direction = route.directionList.find(
-              (d) => d.destination.toLowerCase() === sub.directionName.toLowerCase(),
-            );
-            if (!direction) continue;
-
-            const patternKeys = direction.patternList.map((p) => p.key);
-            const patternPaths = yield* aggieApi
-              .getPatternPaths(patternKeys as any)
-              .pipe(Effect.mapError(() => new HttpApiError.InternalServerError()));
-
-            let stopCode = "";
-            for (const pp of patternPaths) {
-              for (const pattern of pp.patternPaths) {
-                if (pattern.directionKey !== direction.direction.key) continue;
-                for (const point of pattern.patternPoints) {
-                  if (point.stop && point.stop.name.toLowerCase() === sub.stopName.toLowerCase()) {
-                    stopCode = point.stop.stopCode;
-                    break;
-                  }
-                }
-              }
-            }
-
-            if (!stopCode) continue;
-
-            const response = yield* aggieApi
-              .getNextDepartureTimes(
-                [{ routeKey: route.key, directionKey: direction.direction.key }],
-                stopCode as any,
-              )
-              .pipe(Effect.mapError(() => new HttpApiError.InternalServerError()));
-
-            for (const rdt of response.routeDirectionTimes) {
-              const departures = rdt.nextDeparts.map(mapDeparture);
-              allArrival.push(...departures);
-              break;
-            }
-          }
-
-          return allArrival;
+          return arrivalsBySub;
         }),
       );
   }),

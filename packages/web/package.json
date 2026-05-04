@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "bun run build:sw:dev && vite",
     "check": "tsc --noEmit",
     "build": "vite build",
+    "build:sw": "bun build src/sw.ts --outdir=dist --outfile=sw.js --target=browser --format=esm",
+    "build:sw:dev": "bun build src/sw.ts --outdir=public --outfile=sw.js --target=browser --format=esm",
     "preview": "vite preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix"

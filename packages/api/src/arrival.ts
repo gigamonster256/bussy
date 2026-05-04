@@ -27,5 +27,9 @@ export const ArrivalGroup = HttpApiGroup.make("arrival")
       )
       .addSuccess(Schema.Array(ArrivalSchema)),
   )
-  .add(HttpApiEndpoint.get("listArrivalBatch")`/batch`.addSuccess(Schema.Array(ArrivalSchema)))
+  .add(
+    HttpApiEndpoint.get("listArrivalBatch")`/batch`.addSuccess(
+      Schema.Record({ key: Schema.String, value: Schema.Array(ArrivalSchema) }),
+    ),
+  )
   .middleware(TokenAuthorization);

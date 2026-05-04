@@ -53,6 +53,18 @@ export class SubscriptionService extends Effect.Service<SubscriptionService>()(
             .pipe(Effect.head);
           return res;
         }),
+        updateLastNotified: Effect.fn("SubscriptionService.updateLastNotified")(function* (
+          id: string,
+          departureTime: Date,
+        ) {
+          yield* db
+            .update(subscriptionTable)
+            .set({
+              lastNotifiedDepartureTime: departureTime,
+              lastNotifiedAt: new Date(),
+            })
+            .where(and(eq(subscriptionTable.id, id), eq(subscriptionTable.deviceID, deviceID)));
+        }),
         getAll: Effect.fn("SubscriptionService.getAll")(function* () {
           const res = yield* db
             .select()
