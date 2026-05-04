@@ -4,10 +4,8 @@ import { SubscriptionService } from "./subscription";
 import { ArrivalNotifier } from "./notifier";
 import { DatabaseLive } from "./drizzle";
 
-const Resources = Layer.mergeAll(
-  DeviceService.Default,
-  SubscriptionService.Default,
-  ArrivalNotifier.Default,
-);
+const Resources = Layer.mergeAll(DeviceService.Default, SubscriptionService.Default);
 
-export const ResourcesLive = Layer.provide(Resources, DatabaseLive);
+const ResourcesWithNotifier = Layer.provideMerge(ArrivalNotifier.Default, Resources);
+
+export const ResourcesLive = Layer.provide(ResourcesWithNotifier, DatabaseLive);

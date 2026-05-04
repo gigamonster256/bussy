@@ -47,16 +47,15 @@ export const HttpDeviceLive = HttpApiBuilder.group(BussyApi, "device", (handlers
       )
       .handle(
         "registerPushSubscription",
-        Effect.fn("HttpDeviceLive.registerPushSubscription")(function* ({
-          path: { id },
-          payload,
-        }) {
-          yield* devices.setPushSubscription(id, payload.endpoint, payload.keys.p256dh, payload.keys.auth).pipe(
-            Effect.tapError((error) =>
-              Effect.logError(`Error registering push subscription for device ${id}:`, error),
-            ),
-            Effect.mapError(() => new HttpApiError.InternalServerError()),
-          );
+        Effect.fn("HttpDeviceLive.registerPushSubscription")(function* ({ path: { id }, payload }) {
+          yield* devices
+            .setPushSubscription(id, payload.endpoint, payload.keys.p256dh, payload.keys.auth)
+            .pipe(
+              Effect.tapError((error) =>
+                Effect.logError(`Error registering push subscription for device ${id}:`, error),
+              ),
+              Effect.mapError(() => new HttpApiError.InternalServerError()),
+            );
           return { success: true };
         }),
       )

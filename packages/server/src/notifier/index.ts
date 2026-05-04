@@ -1,20 +1,20 @@
-import { Config, Duration, Effect, Schedule } from "effect";
+import { Config, Data, Duration, Effect, Schedule } from "effect";
 import webpush from "web-push";
 import { DeviceService } from "../device";
 import { SubscriptionService } from "../subscription";
 import { AggieSpiritApi } from "@bussy/aggie-api";
 import { fetchArrivalsForSubscriptions } from "../api/arrival";
 
-type SendResult = { _tag: "sent" } | { _tag: "gone" } | { _tag: "error"; error: unknown };
+class PushGoneError extends Data.TaggedError("PushGone") {}
+class PushError extends Data.TaggedError("PushError")<{ error: unknown }> {}
+class DeviceExpired extends Data.TaggedError("DeviceExpired")<{ deviceId: string }> {}
+
 
 export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalNotifier", {
   effect: Effect.gen(function* () {
     const vapidPublicKey = yield* Config.string("VAPID_PUBLIC_KEY");
     const vapidPrivateKey = yield* Config.string("VAPID_PRIVATE_KEY");
-    const vapidSubject = yield* Config.string("VAPID_SUBJECT").pipe(
-      Config.withDefault("mailto:admin@example.com"),
-    );
-
+    const vapidSubject = yield* Config.string("VAPID_SUBJECT");
     webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 
     const devices = yield* DeviceService;
@@ -30,31 +30,24 @@ export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalN
       return currentHHMM >= start && currentHHMM <= end;
     };
 
-    const sendPush = (
+    const sendPush = Effect.fn("ArrivalNotifier.sendPush")(function* (
       endpoint: string,
       p256dh: string,
       auth: string,
       payload: string,
-    ): Effect.Effect<SendResult, never> => {
-      return Effect.tryPromise({
+    ) {
+      return yield* Effect.tryPromise({
         try: () =>
           webpush.sendNotification(
             { endpoint, keys: { p256dh, auth } },
             payload,
           ),
-        catch: (error: any) => error,
-      }).pipe(
-        Effect.matchEffect({
-          onSuccess: () => Effect.succeed({ _tag: "sent" as const }),
-          onFailure: (error: any) => {
-            if (error?.statusCode === 410) {
-              return Effect.succeed({ _tag: "gone" as const });
-            }
-            return Effect.succeed({ _tag: "error" as const, error });
-          },
-        }),
-      );
-    };
+        catch: (error: any) => {
+          if (error?.statusCode === 410) return new PushGoneError();
+          return new PushError({ error });
+        },
+      });
+    });
 
     const poll = Effect.fn("ArrivalNotifier.poll")(function* () {
       yield* Effect.logDebug("Polling for arrivals to notify...");
@@ -85,65 +78,73 @@ export class ArrivalNotifier extends Effect.Service<ArrivalNotifier>()("ArrivalN
           aggieApi,
         );
 
-        for (const sub of eligibleSubs) {
-          const arrivals = arrivalsBySub[sub.id];
-          if (!arrivals || arrivals.length === 0) continue;
+        yield* Effect.gen(function* () {
+          for (const sub of eligibleSubs) {
+            const arrivals = arrivalsBySub[sub.id];
+            if (!arrivals || arrivals.length === 0) continue;
 
-          const nearest = arrivals.reduce((a, b) =>
-            Math.abs(a.minutes) < Math.abs(b.minutes) ? a : b,
-          );
-
-          if (nearest.minutes > sub.notifyMinutes || nearest.minutes < 0) continue;
-
-          if (
-            sub.lastNotifiedDepartureTime &&
-            nearest.estimatedDepartureTimeUtc === sub.lastNotifiedDepartureTime.toISOString()
-          ) {
-            continue;
-          }
-
-          const payload = JSON.stringify({
-            title: `Bus ${sub.routeName} arriving in ${nearest.minutes} min`,
-            body: `${sub.directionName} — ${sub.stopName} stop`,
-            icon: "/icon-192.png",
-            tag: `bus-${sub.id}`,
-            data: { subscriptionId: sub.id, url: "/" },
-          });
-
-          const result = yield* sendPush(device.pushEndpoint, device.pushP256dh, device.pushAuth, payload);
-
-          if (result._tag === "gone") {
-            yield* Effect.logWarning(
-              `Push subscription expired for device ${device.id}, clearing`,
+            const nearest = arrivals.reduce((a, b) =>
+              Math.abs(a.minutes) < Math.abs(b.minutes) ? a : b,
             );
-            yield* devices.removePushSubscription(device.id);
-            break;
-          }
 
-          if (result._tag === "error") {
-            yield* Effect.logWarning("Push notification send failed", result.error);
-            continue;
-          }
+            if (nearest.minutes > sub.notifyMinutes || nearest.minutes < 0) continue;
 
-          yield* subs.updateLastNotified(sub.id, new Date(nearest.estimatedDepartureTimeUtc));
-        }
+            if (
+              sub.lastNotifiedDepartureTime &&
+              nearest.estimatedDepartureTimeUtc === sub.lastNotifiedDepartureTime.toISOString()
+            ) {
+              continue;
+            }
+
+            const payload = JSON.stringify({
+              title: `Bus ${sub.routeName} arriving in ${nearest.minutes} min`,
+              body: `${sub.directionName} — ${sub.stopName} stop`,
+              icon: "/icon-192.png",
+              tag: `bus-${sub.id}`,
+              data: { subscriptionId: sub.id, url: "/" },
+            });
+
+            yield* sendPush(device.pushEndpoint, device.pushP256dh, device.pushAuth, payload).pipe(
+              Effect.catchTag("PushGone", () =>
+                Effect.gen(function* () {
+                  yield* Effect.logWarning(
+                    `Push subscription expired for device ${device.id}, clearing`,
+                  );
+                  yield* devices.removePushSubscription(device.id);
+                  return yield* Effect.fail(
+                    new DeviceExpired({ deviceId: device.id }),
+                  );
+                }),
+              ),
+              Effect.catchTag("PushError", (e) =>
+                Effect.logWarning("Push notification send failed", e.error),
+              ),
+            );
+
+            yield* subs.updateLastNotified(sub.id, new Date(nearest.estimatedDepartureTimeUtc));
+          }
+        }).pipe(
+          Effect.catchTag("DeviceExpired", () => Effect.void),
+        );
       }
     });
 
-    const interval = yield* Config.duration("POLLING_SOON_INTERVAL").pipe(
-      Config.withDefault(Duration.seconds(30)),
-    );
+    const start = Effect.fn("ArrivalNotifier.start")(function* () {
+      const interval = yield* Config.duration("POLLING_SOON_INTERVAL").pipe(
+        Config.withDefault(Duration.seconds(30)),
+      );
 
-    yield* Effect.logInfo(`Starting arrival notification polling every ${interval}...`);
+      yield* Effect.logInfo(`Starting arrival notification polling every ${interval}...`);
 
-    yield* poll.pipe(
-      Effect.catchAll((error) =>
-        Effect.logError("Arrival notification poll failed", error),
-      ),
-      Effect.repeat(Schedule.spaced(interval)),
-      Effect.forkDaemon,
-    );
+      return yield* poll().pipe(
+        Effect.catchAll((error) =>
+          Effect.logError("Arrival notification poll failed", error),
+        ),
+        Effect.repeat(Schedule.spaced(interval)),
+        Effect.forkDaemon,
+      );
+    });
 
-    return { poll };
+    return { poll, start };
   }),
 }) {}

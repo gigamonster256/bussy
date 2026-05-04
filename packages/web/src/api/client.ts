@@ -93,7 +93,10 @@ export const api = {
   registerPushSubscription: (
     deviceId: string,
     subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
-  ) => run((c) => c.device.registerPushSubscription({ path: { id: deviceId }, payload: subscription })),
+  ) =>
+    run((c) =>
+      c.device.registerPushSubscription({ path: { id: deviceId }, payload: subscription }),
+    ),
 
   unregisterPushSubscription: (deviceId: string) =>
     run((c) => c.device.unregisterPushSubscription({ path: { id: deviceId } })),

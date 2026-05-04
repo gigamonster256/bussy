@@ -39,13 +39,15 @@ export class DeviceService extends Effect.Service<DeviceService>()("DeviceServic
           .pipe(Effect.head);
         return res;
       }),
-      getAllWithPushSubscriptions: Effect.fn("DeviceService.getAllWithPushSubscriptions")(function* () {
-        const res = yield* db
-          .select()
-          .from(deviceTable)
-          .where(isNotNull(deviceTable.pushEndpoint));
-        return res;
-      }),
+      getAllWithPushSubscriptions: Effect.fn("DeviceService.getAllWithPushSubscriptions")(
+        function* () {
+          const res = yield* db
+            .select()
+            .from(deviceTable)
+            .where(isNotNull(deviceTable.pushEndpoint));
+          return res;
+        },
+      ),
       deleteByID: Effect.fn("DeviceService.deleteByID")(function* (id: string) {
         yield* db.delete(deviceTable).where(eq(deviceTable.id, id));
         return;
@@ -56,20 +58,26 @@ export class DeviceService extends Effect.Service<DeviceService>()("DeviceServic
         p256dh: string,
         auth: string,
       ) {
-        yield* db.update(deviceTable).set({
-          pushEndpoint: endpoint,
-          pushP256dh: p256dh,
-          pushAuth: auth,
-        }).where(eq(deviceTable.id, id));
+        yield* db
+          .update(deviceTable)
+          .set({
+            pushEndpoint: endpoint,
+            pushP256dh: p256dh,
+            pushAuth: auth,
+          })
+          .where(eq(deviceTable.id, id));
       }),
       removePushSubscription: Effect.fn("DeviceService.removePushSubscription")(function* (
         id: string,
       ) {
-        yield* db.update(deviceTable).set({
-          pushEndpoint: null,
-          pushP256dh: null,
-          pushAuth: null,
-        }).where(eq(deviceTable.id, id));
+        yield* db
+          .update(deviceTable)
+          .set({
+            pushEndpoint: null,
+            pushP256dh: null,
+            pushAuth: null,
+          })
+          .where(eq(deviceTable.id, id));
       }),
     };
   }),

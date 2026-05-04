@@ -16,14 +16,15 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@bussy/api": "workspace:*",
     "@bussy/aggie-api": "workspace:*",
+    "@bussy/api": "workspace:*",
     "@bussy/schemas": "workspace:*",
     "@effect/platform": "catalog:",
     "@effect/platform-bun": "catalog:",
     "@effect/sql": "catalog:",
     "@effect/sql-drizzle": "catalog:",
     "@effect/sql-mysql2": "catalog:",
+    "@types/web-push": "^3.6.4",
     "drizzle-orm": "1.0.0-beta.20",
     "effect": "catalog:",
     "mysql2": "^3.20.0",

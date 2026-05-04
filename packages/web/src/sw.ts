@@ -13,7 +13,14 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
-  let payload: { title: string; body?: string; icon?: string; badge?: string; tag?: string; data?: Record<string, unknown> };
+  let payload: {
+    title: string;
+    body?: string;
+    icon?: string;
+    badge?: string;
+    tag?: string;
+    data?: Record<string, unknown>;
+  };
   try {
     payload = event.data.json();
   } catch {

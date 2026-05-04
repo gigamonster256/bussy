@@ -23,6 +23,7 @@ Texas A&M bus arrival notification service. Bun monorepo with Effect-TS, MySQL, 
 | DB migrate | `bun --filter @bussy/server db:migrate` (Drizzle Kit) |
 
 After changes: `bun lint && bun check && bun test`
+After pulling new migrations: `bun --filter @bussy/server db:migrate`
 
 ## Monorepo Structure
 
@@ -58,5 +59,5 @@ Dependency flow: `web → api, schemas` / `server → api, aggie-api, schemas` /
 - Copy `.env.example` to `.env`. Key variables:
   - `DATABASE_URL` — MySQL connection string (default: `mysql://bussy:bussy@localhost:3306/bussy_dev`)
   - `TEST_DATABASE_URL` — test DB (default: `mysql://bussy:bussy@localhost:3306/bussy_test`)
-  - VAPID keys for push notifications (`bunx web-push generate-vapid-keys --json`)
+  - VAPID keys for push notifications (`bunx web-push generate-vapid-keys --json`). Required — server will not start without them.
 - CI uses pnpm (see `.github/`), but local dev uses bun.

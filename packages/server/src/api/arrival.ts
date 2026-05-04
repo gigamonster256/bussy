@@ -88,15 +88,9 @@ export function fetchArrivalsForSubscriptions(
   });
 }
 
-type AggieApi = {
-  getBaseData: () => Effect.Effect<any>;
-  getPatternPaths: (routeKeys: ReadonlyArray<any>) => Effect.Effect<any>;
-  getNextDepartureTimes: (rdks: ReadonlyArray<any>, stopCode: any) => Effect.Effect<any>;
-};
-
 export const HttpArrivalLive = HttpApiBuilder.group(BussyApi, "arrival", (handlers) =>
   Effect.gen(function* () {
-    const aggieApi: AggieApi = yield* AggieSpiritApi;
+    const aggieApi = yield* AggieSpiritApi;
     const subscriptionService = yield* SubscriptionService;
 
     return handlers
