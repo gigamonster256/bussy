@@ -39,7 +39,6 @@ export class AggieSpiritApi extends Effect.Service<AggieSpiritApi>()("AggieSpiri
         routeKeys: Array<RouteKey>,
       ) {
         const headers = yield* auth.headers();
-        const client = yield* HttpClient.HttpClient;
 
         const formData = new FormData();
         for (const routeKey of routeKeys) {

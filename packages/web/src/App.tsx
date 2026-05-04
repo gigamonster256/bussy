@@ -356,11 +356,7 @@ export default function App() {
           </Show>
         </section>
 
-        
-          <AddSubscriptionForm
-            onSubscriptionCreated={handleSubscriptionCreated}
-            onLog={log}
-          />
+        <AddSubscriptionForm onSubscriptionCreated={handleSubscriptionCreated} onLog={log} />
 
         {/* Dev Mode Section */}
         <Show when={devMode()}>

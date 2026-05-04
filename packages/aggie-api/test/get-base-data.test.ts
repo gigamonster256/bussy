@@ -1,13 +1,21 @@
-import { describe, it, expect } from "@effect/vitest";
+import { beforeAll, afterAll, describe, expect, layer } from "@effect/vitest";
 import { Effect, Layer } from "effect";
 import { FetchHttpClient } from "@effect/platform";
 
 import { AggieSpiritApi } from "../src/aggie-spirit";
+import { AggieSpiritApiMock, setupMockFetch } from "./mock";
 
-const TestLayer = Layer.mergeAll(AggieSpiritApi.Default, FetchHttpClient.layer);
+const shouldRunLive = process.env.AGGIE_SPIRIT_LIVE === "true";
 
-describe("AggieSpiritApi.getBaseData", () => {
-  it.effect("should fetch base data from real endpoint", () =>
+let restoreFetch: (() => void) | undefined;
+
+beforeAll(() => {
+  restoreFetch = setupMockFetch();
+});
+afterAll(() => restoreFetch?.());
+
+function baseDataTests(it: any) {
+  it.effect("should fetch base data with routes", () =>
     Effect.gen(function* () {
       const api = yield* AggieSpiritApi;
       const result = yield* api.getBaseData();
@@ -15,13 +23,7 @@ describe("AggieSpiritApi.getBaseData", () => {
       expect(result.routes).toBeDefined();
       expect(Array.isArray(result.routes)).toBe(true);
       expect(result.routes.length).toBeGreaterThan(0);
-
-      const firstRoute = result.routes[0];
-      expect(firstRoute).toBeDefined();
-      expect(firstRoute?.key).toBeDefined();
-      expect(firstRoute?.name).toBeDefined();
-      expect(firstRoute?.shortName).toBeDefined();
-    }).pipe(Effect.provide(TestLayer)),
+    }),
   );
 
   it.effect("should return routes with valid structure", () =>
@@ -36,6 +38,17 @@ describe("AggieSpiritApi.getBaseData", () => {
         expect(route.name.length).toBeGreaterThan(0);
         expect(typeof route.shortName).toBe("string");
       }
-    }).pipe(Effect.provide(TestLayer)),
+    }),
   );
+}
+
+layer(AggieSpiritApiMock)("AggieSpiritApi.getBaseData (mock)", (it) => {
+  baseDataTests(it);
+});
+
+const LiveLayer = Layer.provide(AggieSpiritApi.Default, FetchHttpClient.layer);
+describe.runIf(shouldRunLive)("AggieSpiritApi.getBaseData (live)", () => {
+  layer(LiveLayer, { excludeTestServices: true })("tests", (it) => {
+    baseDataTests(it);
+  });
 });
